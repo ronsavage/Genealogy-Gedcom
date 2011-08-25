@@ -8,7 +8,7 @@ WriteMakefile
  ($] ge '5.005') ?
  (
   AUTHOR   => 'Ron Savage (ron@savage.net.au)',
-  ABSTRACT => 'Read and write GEDCOM files',
+  ABSTRACT => 'A processor for GEDCOM data',
     ) : (),
  clean =>
  {
