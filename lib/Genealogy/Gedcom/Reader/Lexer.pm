@@ -1,6 +1,5 @@
 package Genealogy::Gedcom::Reader::Lexer;
 
-use feature 'say';
 use strict;
 use warnings;
 

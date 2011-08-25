@@ -1,6 +1,5 @@
 #!/usr/bin/env perl
 
-use feature 'say';
 use strict;
 use warnings;
 
@@ -174,9 +173,9 @@ for (my $i = 0; $i <= $last; $i++)
 	}
 }
 
-say 'Unused:';
+print "Unused: \n";
 
 for my $i (sort keys %max)
 {
-	say $i if ($max{$i} == 0);
+	print "$i\n" if ($max{$i} == 0);
 }
