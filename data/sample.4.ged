@@ -1,0 +1,45 @@
+0 HEAD
+1   SOUR Genealogy::Gedcom
+2     NAME Genealogy::Gedcom::Reader
+2     VERS V 1.00
+2     CORP Ron Savage
+3       ADDR Box 3055
+4         STAE Vic
+4         POST 3163
+4         CTRY Australia
+3       EMAIL ron@savage.net.au
+3       WWW http://savage.net.au
+2     DATA
+3       COPR Copyright 2011, Ron Savage
+1   NOTE
+2     CONT This file is based from test data in Paul Johnson's Gedcom.pm
+2     CONT Gedcom.pm is Copyright 1999-2009, Paul Johnson (paul@pjcj.net)
+2     CONT Version 1.16 - 24th April 2009
+2     CONT
+2     CONT Ron's modules under the Genealogy::Gedcom namespace are free
+2     CONT
+2     CONT The latest versions of these modules is available from
+2     CONT my homepage http://savage.net.au and http://metacpan.org
+1   GEDC
+2     VERS 5.5.1-5
+2     FORM LINEAGE-LINKED
+1   DATE 10-08-2011
+1   CHAR ANSEL
+1   SUBM @SUBM1@
+
+0 @I82@ INDI
+1   NAME Given Name /Surname/
+1   BIRT
+2     DATE Saturday, 1st January 2000
+2     AGE 0
+1   BIRT
+2     DATE Sunday, 2nd January 2000
+1   RIN 83
+1   NOTE Line 1
+2     CONT Line 2
+2     CONT Lin
+2     CONC e 3
+2     CONT Line 
+2     CONC 4
+
+0 TRLR

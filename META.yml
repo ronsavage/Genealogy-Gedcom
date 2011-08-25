@@ -1,0 +1,36 @@
+---
+abstract: 'Read and write GEDCOM files'
+author:
+  - 'Ron Savage <ron@savage.net.au>'
+build_requires:
+  Test::More: 0.94
+  Test::Pod: 1.44
+configure_requires:
+  Module::Build: 0.38
+dynamic_config: 1
+generated_by: 'Module::Build version 0.38, CPAN::Meta::Converter version 2.110930'
+license: artistic
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Genealogy-Gedcom
+provides:
+  Genealogy::Gedcom:
+    file: lib/Genealogy/Gedcom.pm
+    version: 0.60
+  Genealogy::Gedcom::Reader:
+    file: lib/Genealogy/Gedcom/Reader.pm
+    version: 0.60
+  Genealogy::Gedcom::Reader::Lexer:
+    file: lib/Genealogy/Gedcom/Reader/Lexer.pm
+    version: 0.60
+requires:
+  Getopt::Long: 2.38
+  Hash::FieldHash: 0.1
+  Log::Handler: 0.71
+  Perl6::Slurp: 0.03
+  Pod::Usage: 1.36
+  Set::Array: 0.23
+resources:
+  license: http://opensource.org/licenses/artistic-license.php
+version: 0.60

@@ -1,0 +1,60 @@
+{
+   "abstract" : "Read and write GEDCOM files",
+   "author" : [
+      "Ron Savage <ron@savage.net.au>"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.110930",
+   "license" : [
+      "artistic_1"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "Genealogy-Gedcom",
+   "prereqs" : {
+      "build" : {
+         "requires" : {
+            "Test::More" : "0.94",
+            "Test::Pod" : "1.44"
+         }
+      },
+      "configure" : {
+         "requires" : {
+            "Module::Build" : "0.38"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "Getopt::Long" : "2.38",
+            "Hash::FieldHash" : "0.1",
+            "Log::Handler" : "0.71",
+            "Perl6::Slurp" : "0.03",
+            "Pod::Usage" : "1.36",
+            "Set::Array" : "0.23"
+         }
+      }
+   },
+   "provides" : {
+      "Genealogy::Gedcom" : {
+         "file" : "lib/Genealogy/Gedcom.pm",
+         "version" : "0.60"
+      },
+      "Genealogy::Gedcom::Reader" : {
+         "file" : "lib/Genealogy/Gedcom/Reader.pm",
+         "version" : "0.60"
+      },
+      "Genealogy::Gedcom::Reader::Lexer" : {
+         "file" : "lib/Genealogy/Gedcom/Reader/Lexer.pm",
+         "version" : "0.60"
+      }
+   },
+   "release_status" : "stable",
+   "resources" : {
+      "license" : [
+         "http://opensource.org/licenses/artistic-license.php"
+      ]
+   },
+   "version" : "0.60"
+}
