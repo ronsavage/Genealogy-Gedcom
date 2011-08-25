@@ -1,5 +1,5 @@
 {
-   "abstract" : "Read and write GEDCOM files",
+   "abstract" : "A processor for GEDCOM data",
    "author" : [
       "Ron Savage <ron@savage.net.au>"
    ],
