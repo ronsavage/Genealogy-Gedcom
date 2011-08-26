@@ -392,7 +392,7 @@ sub run
 		# 5: Type (Item/Child of item) of record.
 		# 6: Input record.
 
-		if ($record =~ /^(0)\s+\@(.+?)\@\s+([A-Z]{3,4})\s*(.*)$/)
+		if ($record =~ /^(0)\s+\@(.+?)\@\s+(_?(?:[A-Z]{3,4}))\s*(.*)$/)
 		{
 			push @$line, [$line_count, $1, defined($2) ? $2 : '', $3, defined($4) ? $4 : '', 'Item', $record];
 		}
@@ -400,7 +400,7 @@ sub run
 		{
 			push @$line, [$line_count, $1, '', $2, '', 'Item', $record];
 		}
-		elsif ($record =~ /^(\d+)\s+(ADR[123]|[A-Z]{3,5})\s*\@?(.*?)\@?$/)
+		elsif ($record =~ /^(\d+)\s+(_?(?:ADR[123]|[A-Z]{3,5}))\s*\@?(.*?)\@?$/)
 		{
 			push @$line, [$line_count, $1, '', $2, defined($3) ? $3 : '', 'Child', $record];
 		}
@@ -646,6 +646,13 @@ sub tag_advance
 	while ( ($index <= $#$line) && $$jump{$$line[$index][3]})
 	{
 		$index = $$jump{$$line[$index][3]} -> ($index, $line);
+	}
+
+	while ( ($index <= $#$line) && ($$line[$index][3] =~ /^_/) )
+	{
+		$myself -> push_item($$line[$index], 'User');
+
+		$index++;
 	}
 
 	return $index;
@@ -3601,6 +3608,26 @@ This is the only method the caller needs to call. All parameters are supplied to
 Returns 0 for success and 1 for failure.
 
 =head1 FAQ
+
+=head2 How are user-defined tags handled?
+
+In the same way as GEDCOM tags.
+
+They are defined by having a leading '_', as well as same syntax as GEDCOM files. That is:
+
+=over 4
+
+=item o At level 0
+
+They match /(_?(?:[A-Z]{3,4}))/.
+
+=item o At level > 0
+
+They match /(_?(?:ADR[123]|[A-Z]{3,5}))/.
+
+=back
+
+See data/sample.4.ged.
 
 =head2 How is the lexed data stored in RAM?
 

@@ -26,8 +26,14 @@
 1   DATE 10-08-2011
 1   CHAR ANSEL
 1   SUBM @SUBM1@
+1   _TAA One
+1   _TBB @I1@
+2     _TCC Three
 
-0 @I82@ INDI
+0 @I1@ _TDD Four
+1   _TEE Five
+
+0 @I1@ INDI
 1   NAME Given Name /Surname/
 1   BIRT
 2     DATE Saturday, 1st January 2000
@@ -35,6 +41,8 @@
 1   BIRT
 2     DATE Sunday, 2nd January 2000
 1   RIN 83
+2     _TFF Six
+1   _TGG Seven
 1   NOTE Line 1
 2     CONT Line 2
 2     CONT Lin
