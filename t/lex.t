@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 10;
+use Test::More tests => 2;
 
 # -----------------------------------------------
 
@@ -11,15 +11,17 @@ sub BEGIN { use_ok('Genealogy::Gedcom::Reader::Lexer'); }
 
 # ------------------------------------------------
 
-my($lexer) = Genealogy::Gedcom::Reader::Lexer -> new
+my($file_name) = 'data/sample.4.ged';
+my($lexer)     = Genealogy::Gedcom::Reader::Lexer -> new
 	(
-	 input_file   => 'data/sample.4.ged',
+	 input_file   => $file_name,
 	 logger       => '',
 	 report_items => 0,
 	 strict       => 1,
 	);
 
-my($result) = $lexer -> run;
-my(@item)   = @{$lexer -> items};
+my($result)     = $lexer -> run;
+my(@item)       = @{$lexer -> items};
+my($item_count) = 43;
 
-print "Item count: ", scalar @item, "\n";
+ok(scalar @item == $item_count, "$file_name really does contain $item_count items");

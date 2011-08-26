@@ -398,7 +398,7 @@ sub run
 		}
 		elsif ($record =~ /^(0)\s+(HEAD|TRLR)$/)
 		{
-			push @$line, [$line_count, $1, '', $2, '', $2, $record];
+			push @$line, [$line_count, $1, '', $2, '', 'Item', $record];
 		}
 		elsif ($record =~ /^(\d+)\s+(ADR[123]|[A-Z]{3,5})\s*\@?(.*?)\@?$/)
 		{
@@ -3667,13 +3667,9 @@ This is a string indicating whether the item is a level 0 item or a child thereo
 
 Level will be > 0.
 
-=item o HEAD
-
 =item o Item
 
 Level will be 0.
-
-=item o TRLR
 
 =back
 
