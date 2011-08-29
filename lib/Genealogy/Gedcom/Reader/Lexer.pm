@@ -3863,9 +3863,9 @@ Since the default value of 'maxlevel' is 'info', all this output is suppressed b
 
 =item o Log levels
 
-Log levels are, from highest (i.e. most output) to lowest: 'debug', 'info', 'warning', 'error'. No lower levels are used.
+Log levels are, from highest (i.e. most output) to lowest: 'debug', 'info', 'warning', 'error'. No lower levels are used. See L<Log::Handler::Levels>.
 
-'maxlevel' defaults to 'info' and 'minlevel' defaults to 'info'. In this way, levels 'info' and 'warning' are reported by default.
+'maxlevel' defaults to 'info' and 'minlevel' defaults to 'error'. In this way, levels 'info' and 'warning' are reported by default.
 
 Currently, level 'error' is not used. Fatal errors cause 'die' to be called, since they are unrecoverable.
 
