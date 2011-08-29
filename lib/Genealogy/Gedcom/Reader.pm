@@ -88,10 +88,13 @@ sub run
 		 report_items => $self -> report_items,
 		 strict       => $self -> strict,
 		);
+	my($result) = $lexer -> run;
+
+	$self -> items($lexer -> items);
 
 	# Return 0 for success and 1 for failure.
 
-	return $lexer -> run;
+	return $result;
 
 } # End of run.
 

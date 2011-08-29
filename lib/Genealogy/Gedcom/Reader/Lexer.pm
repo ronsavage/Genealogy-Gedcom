@@ -342,7 +342,7 @@ sub report
 	my($self)   = @_;
 	my($format) = '%6s  %6s  %6s  %-6s  %-6s  %-12s  %-10s  %-s';
 
-	$self -> log(notice=> sprintf($format, 'Count', 'Line', 'Level', 'Tag', 'Xref', 'Type', 'Rank', 'Data') );
+	$self -> log(info => sprintf($format, 'Count', 'Line', 'Level', 'Tag', 'Xref', 'Type', 'Rank', 'Data') );
 
 	my(%type);
 
@@ -352,8 +352,6 @@ sub report
 
 		$self -> log(info => sprintf($format, $$item{count}, $$item{line_count}, $$item{level}, $$item{tag}, $$item{xref}, $$item{type}, $$item{rank}, $$item{data}) );
 	}
-
-	#$self -> log(debug => $_) for sort keys %type;
 
 } # End of report.
 
@@ -370,7 +368,9 @@ sub run
 	}
 	else
 	{
-		die 'Error: You must provide a GEDCOM file with -input_file';
+		my($lines) = $self -> gedcom_data;
+
+		die 'Error: You must provide a GEDCOM file with -input_file, or data with gedcom_data([...])' if ($#$lines < 0);
 	}
 
 	my($line)       = [];
@@ -3468,17 +3468,25 @@ This option is only used if the lexer creates an object of type L<Log::Handler>.
 
 Default: 'info'.
 
+Log levels are, from highest (i.e. most output) to lowest: 'debug', 'info', 'warning', 'error'. No lower levels are used.
+
 =item o minlevel => $level
 
 This option is only used if the lexer creates an object of type L<Log::Handler>. See L<Log::Handler::Levels>.
 
 Default: 'error'.
 
-No lower levels are used.
-
 =item o report_items => $Boolean
 
-Calls L</report()> to report, via the log, the items recognized by the lexer, if 1.
+=over 4
+
+=item o 0 => Report nothing
+
+=item o 1 => Call L</report()> to report, via the log, the items recognized by the lexer
+
+This output is at log level 'info'.
+
+=back
 
 Default: 0.
 
@@ -3488,13 +3496,9 @@ Specifies lax or strict string length checking during validation.
 
 =over 4
 
-=item o 0
+=item o 0 => String lengths can be 0, allowing blank NOTE etc records.
 
-String lengths can be 0, allowing blank NOTE etc records.
-
-=item o 1
-
-String lengths must be > 0, as per L<the GEDCOM Specification Ged551-5.pdf|http://wiki.webtrees.net/File:Ged551-5.pdf>.
+=item o 1 => String lengths must be > 0, as per L<the GEDCOM Specification Ged551-5.pdf|http://wiki.webtrees.net/File:Ged551-5.pdf>.
 
 Note: A string of length 1 - e.g. '0' - might still be an error.
 
@@ -3513,7 +3517,7 @@ String lengths out of range are reported as log messages of type 'warning'.
 
 =head2 check_length($key, $line)
 
-Checks the length of the data component (after the tag) on the given $line.
+Checks the length of the data component (after the tag) on the given input $line.
 
 $key identifies what type of record the $line is expected to be.
 
@@ -3521,7 +3525,7 @@ $key identifies what type of record the $line is expected to be.
 
 If the caller has requested GEDCOM data be read from a file, with the input_file option to new(), this method reads that file.
 
-Called as appropriate by run().
+Called as appropriate by L</run()>, if you do not suppy data with L</gedcom_data([$gedcom_data])>.
 
 =head2 gedcom_data([$gedcom_data])
 
@@ -3531,7 +3535,7 @@ Get or set the arrayref of GEDCOM records to be processed.
 
 This is normally only used internally, but can be used to bypass reading from a file.
 
-Note: If supplying data this way rather than via the file, you must strip leading and trailing blanks.
+Note: If supplying data this way rather than via the file, you must strip leading and trailing blanks on every line.
 
 =head2 get_max_length($key, $line)
 
@@ -3591,6 +3595,8 @@ This option is only used if the lexer creates an object of type L<Log::Handler>.
 
 Pushes a hashref of components of the $line, with type $type, onto the arrayref of items returned by L</items()>.
 
+See the L</FAQ> for details.
+
 =head2 report()
 
 Report, via the log, the list of items recognized by the lexer.
@@ -3603,7 +3609,7 @@ Get or set the value which determines whether or not to report the items recogni
 
 =head2 run()
 
-This is the only method the caller needs to call. All parameters are supplied to new().
+This is the only method the caller needs to call. All parameters are supplied to new(), or via previous calls to various methods.
 
 Returns 0 for success and 1 for failure.
 
@@ -3617,13 +3623,9 @@ They are defined by having a leading '_', as well as same syntax as GEDCOM files
 
 =over 4
 
-=item o At level 0
+=item o At level 0, they match /(_?(?:[A-Z]{3,4}))/.
 
-They match /(_?(?:[A-Z]{3,4}))/.
-
-=item o At level > 0
-
-They match /(_?(?:ADR[123]|[A-Z]{3,5}))/.
+=item o At level > 0, they match /(_?(?:ADR[123]|[A-Z]{3,5}))/.
 
 =back
 
@@ -3770,9 +3772,23 @@ As with data (above), the '@' characters are stripped.
 
 =head2 What validation is performed?
 
-Firstly, validation is mandatory, even with the 'strict' option set to 0. 'strict' only affects the minimum string length acceptable.
+=over 4
 
-The only specific validation done is to check maximum string lengths as per L<the GEDCOM Specification Ged551-5.pdf|http://wiki.webtrees.net/File:Ged551-5.pdf>.
+=item o Strict 'v' Mandatory
+
+Validation is mandatory, even with the 'strict' option set to 0. 'strict' only affects the minimum string length acceptable.
+
+=item o Tag nesting
+
+Tag nesting is validated by the mechanism of nested function calls, with each function knowing what tags it handles, and with each nested call handling its own tags.
+
+This process starts with the call to tag_lineage(0, $line) in method L</run()>.
+
+=item o String lengths
+
+Maximum string lengths are checked as per L<the GEDCOM Specification Ged551-5.pdf|http://wiki.webtrees.net/File:Ged551-5.pdf>.
+
+=back
 
 =head2 What file charsets are supported?
 
