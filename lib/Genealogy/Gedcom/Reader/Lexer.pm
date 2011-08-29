@@ -3532,7 +3532,7 @@ Default: 0.
 The upper lengths on strings are always as per L<the GEDCOM Specification Ged551-5.pdf|http://wiki.webtrees.net/File:Ged551-5.pdf>.
 See L</get_max_length($key, $line)> for details.
 
-String lengths out of range are reported as log messages of type 'warning'.
+String lengths out of range (as with all validation failures) are reported as log messages at level 'warning'.
 
 =back
 
@@ -3825,6 +3825,8 @@ This process starts with the call to tag_lineage(0, $line) in method L</run()>.
 
 =back
 
+All validation failures are reported as log messages at level 'warning'.
+
 =head2 What file charsets are supported?
 
 ASCII. The code should support: ANSEL (a superset of ASCII), ASCII, UTF-8 and UTF-16 (known to GEDCOM as UNICODE).
@@ -3844,6 +3846,36 @@ This is a user (run time) error.
 =item o When there is a syntax error in a GEDCOM record
 
 This is a user (data preparation) error.
+
+=back
+
+=head2 How does logging work?
+
+=over 4
+
+=item o Debugging
+
+When new() is called as new(maxlevel => 'debug'), each function entry is logged at level 'debug'.
+
+This has the effect of tracing all code which processes tags, since this is done with function calls. Method calls are not traced.
+
+Since the default value of 'maxlevel' is 'info', all this output is suppressed by default. Such output is mainly for the author's benefit.
+
+=item o Log levels
+
+Log levels are, from highest (i.e. most output) to lowest: 'debug', 'info', 'warning', 'error'. No lower levels are used.
+
+'maxlevel' defaults to 'info' and 'minlevel' defaults to 'info'. In this way, levels 'info' and 'warning' are reported by default.
+
+Currently, level 'error' is not used. Fatal errors cause 'die' to be called, since they are unrecoverable.
+
+=item o Reporting
+
+When new() is called as new(report_items => 1), the items are logged at level 'info'.
+
+=item o  Validation failures
+
+These are reported at level 'warning'.
 
 =back
 
