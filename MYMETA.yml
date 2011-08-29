@@ -1,5 +1,5 @@
 ---
-abstract: 'A processor for GEDCOM data'
+abstract: 'An OS-independent processor for GEDCOM data'
 author:
   - 'Ron Savage <ron@savage.net.au>'
 build_requires:

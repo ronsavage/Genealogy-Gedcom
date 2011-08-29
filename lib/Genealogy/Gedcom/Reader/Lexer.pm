@@ -3420,7 +3420,7 @@ sub tag_wife_xref
 
 =head1 NAME
 
-L<Genealogy::Gedcom::Reader::Lexer> - A lexer for GEDCOM data
+L<Genealogy::Gedcom::Reader::Lexer> - An OS-independent lexer for GEDCOM data
 
 =head1 Synopsis
 
@@ -3565,7 +3565,7 @@ Get or set the arrayref of GEDCOM records to be processed.
 
 This is normally only used internally, but can be used to bypass reading from a file.
 
-Note: If supplying data this way rather than via the file, you must strip leading and trailing blanks on every line.
+Note: If supplying data this way rather than via the file, you must strip newlines etc on every line, as well as leading and trailing blanks.
 
 =head2 get_max_length($key, $line)
 
@@ -3862,11 +3862,20 @@ Here are some suggestions from L<the mailing list|The Gedcom Mailing List>:
 
 =item o Date checks and more date checks
 
+=item o Mandatory sub-tags
+
+This means check that each tag has all its mandatory sub-tags.
+
 =item o Natural (not step-) parent must be older than child
 
 =item o Prior art
 
 L<http://www.tamurajones.net/GEDCOMValidation.xhtml>.
+
+=item o Specific values for data attached to tags
+
+Many such checks are possible. E.g. Attribute type (p 43 of L<GEDCOM Specification|http://wiki.webtrees.net/File:Ged551-5.pdf>) must be one of:
+CAST | EDUC | NATI | OCCU | PROP | RELI | RESI | TITL | FACT.
 
 =back
 

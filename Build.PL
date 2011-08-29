@@ -4,7 +4,7 @@ Module::Build -> new
 (
  module_name    => 'Genealogy::Gedcom',
  license        => 'artistic',
- dist_abstract  => 'A processor for GEDCOM data',
+ dist_abstract  => 'An OS-independent processor for GEDCOM data',
  dist_author    => 'Ron Savage <ron@savage.net.au>',
  build_requires =>
  {

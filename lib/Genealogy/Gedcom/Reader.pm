@@ -106,7 +106,7 @@ sub run
 
 =head1 NAME
 
-L<Genealogy::Gedcom::Reader> - A reader for GEDCOM data
+L<Genealogy::Gedcom::Reader> - An OS-independent reader for GEDCOM data
 
 =head1 Synopsis
 

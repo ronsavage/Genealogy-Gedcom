@@ -13,7 +13,7 @@ our $VERSION = '0.60';
 
 =head1 NAME
 
-L<Genealogy::Gedcom> - A processor for GEDCOM data
+L<Genealogy::Gedcom> - An OS-independent processor for GEDCOM data
 
 =head1 Synopsis
 
