@@ -78,17 +78,19 @@ This is a dummy module at the moment, which just occupies the namespace.
 
 =item o Genealogy::Gedcom::Reader
 
-This is the module for the average user. See scripts/read.pl, which is currently a copy of scripts/lex.pl.
+This employs the lexer to do the work. It may one day use a (non-existent) parser too.
 
-It employs the lexer to do the work. It may one day use the (non-existent) parser too.
+Run scripts/read.pl -help.
+
+read.pl is currenly a copy of lex.pl. The latter is recommended.
 
 =item o Genealogy::Gedcom::Reader::Lexer
 
 This does the real work for finding tokens within GEDCOM files.
 
-It outputs an arrayref of hashrefs.
+Run scripts/lex.pl -help.
 
-See L<Genealogy::Gedcom::Reader::Lexer/FAQ> for details.
+See L<Genealogy::Gedcom::Reader::Lexer> for details.
 
 =back
 

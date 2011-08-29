@@ -37,7 +37,7 @@ sub check_length
 
 	if ( ($length < $min) || ($length > $max) )
 	{
-		$self -> log(warning => "Line: $$line[0]. Field: $key. Value: $value. Length: $length. Valid length range $min .. $max");
+		$self -> log(warning => "Warning: Line: $$line[0]. Field: $key. Value: $value. Length: $length. Valid length range $min .. $max");
 	}
 
 } # End of check_length.
@@ -57,6 +57,28 @@ sub _count
 	return $self -> counter;
 
 } # End of _count.
+
+# --------------------------------------------------
+
+sub cross_check_xrefs
+{
+	my($self) = @_;
+
+	my(@link);
+	my(%target);
+
+	for my $item ($self -> items -> print)
+	{
+		push @link, [$$item{data}, $$item{line_count}] if ($$item{type} =~ /^Link/);
+		$target{$$item{xref} } = 1                     if ($$item{rank} eq 'Item');
+	}
+
+	for my $link (@link)
+	{
+		$self -> log(warning => "Warning: Line $$link[1]. Link $$link[0] does not point to an existing xref") if (! $target{$$link[0]}); 
+	}
+
+} # End of cross_check_xrefs.
 
 # --------------------------------------------------
 
@@ -413,6 +435,7 @@ sub run
 	tag_lineage(0, $line);
 
 	$self -> report if ($self -> report_items);
+	$self -> cross_check_xrefs;
 
 	# Return 0 for success and 1 for failure.
 
@@ -3774,6 +3797,14 @@ As with data (above), the '@' characters are stripped.
 
 =over 4
 
+=item o Cross-references
+
+Xrefs (@...@) are checked that they point to a target which exists.
+
+=item o String lengths
+
+Maximum string lengths are checked as per L<the GEDCOM Specification Ged551-5.pdf|http://wiki.webtrees.net/File:Ged551-5.pdf>.
+
 =item o Strict 'v' Mandatory
 
 Validation is mandatory, even with the 'strict' option set to 0. 'strict' only affects the minimum string length acceptable.
@@ -3783,10 +3814,6 @@ Validation is mandatory, even with the 'strict' option set to 0. 'strict' only a
 Tag nesting is validated by the mechanism of nested function calls, with each function knowing what tags it handles, and with each nested call handling its own tags.
 
 This process starts with the call to tag_lineage(0, $line) in method L</run()>.
-
-=item o String lengths
-
-Maximum string lengths are checked as per L<the GEDCOM Specification Ged551-5.pdf|http://wiki.webtrees.net/File:Ged551-5.pdf>.
 
 =back
 
