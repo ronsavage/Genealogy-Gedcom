@@ -3939,6 +3939,16 @@ This is a user (data preparation) error.
 
 =back
 
+=head2 Why did you use functions and not methods in all the jump tables?
+
+Because of the effort of taking references to methods.
+
+A function can be used as \&tag_x, but the equivalent usage of a method requires sub{$self -> tag_x}. Even if the Perl compiler optimizes away all the sub calls, what's the gain?
+
+=head2 How do I change the version of the GEDCOM grammar supported?
+
+Errr, by changing the source code, unfortunately.
+
 =head2 What file charsets are supported?
 
 ASCII - i.e. nothing else has been tested.
