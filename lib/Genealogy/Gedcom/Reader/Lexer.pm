@@ -3801,6 +3801,14 @@ As with data (above), the '@' characters are stripped.
 
 =head2 What validation is performed?
 
+There is no perfect answer as to what should be a warning and what should be an error.
+
+So, the author's philosophy is that unrecoverable states are errors, and the code calls 'die'. See L</Under what circumstances does the code call 'die'?>.
+
+And, the log level 'error' is not used. All validation failures are logged at level warning, leaving interpretation up to the user. See L</How does logging work?>.
+
+Details:
+
 =over 4
 
 =item o Cross-references
@@ -3827,25 +3835,31 @@ This process starts with the call to tag_lineage(0, $line) in method L</run()>.
 
 All validation failures are reported as log messages at level 'warning'.
 
-=head2 What file charsets are supported?
+=head2 What other validation is planned?
 
-ASCII. The code should support: ANSEL (a superset of ASCII), ASCII, UTF-8 and UTF-16 (known to GEDCOM as UNICODE).
-
-=head2 Under what circumstances does the code call 'die'?
+Here are some suggestions from L<the mailing list|The Gedcom Mailing List>:
 
 =over 4
 
-=item o When there is a typo in the field name passed in to check_length()
+=item o Date checks and more date checks
 
-This is a programming error.
+=item o Natural (not step-) parent must be older than child
 
-=item o When an input file is not specified
+=item o Prior art
 
-This is a user (run time) error.
+L<http://www.tamurajones.net/GEDCOMValidation.xhtml>.
 
-=item o When there is a syntax error in a GEDCOM record
+=back
 
-This is a user (data preparation) error.
+=head2 What other features are planned?
+
+Here are some suggestions from L<the mailing list|The Gedcom Mailing List>:
+
+=over 4
+
+=item o Persistent IDs for individuals
+
+L<A proposal re UUIDs|http://savage.net.au/Perl-modules/html/genealogy/uuid.html>.
 
 =back
 
@@ -3867,7 +3881,7 @@ Log levels are, from highest (i.e. most output) to lowest: 'debug', 'info', 'war
 
 'maxlevel' defaults to 'info' and 'minlevel' defaults to 'error'. In this way, levels 'info' and 'warning' are reported by default.
 
-Currently, level 'error' is not used. Fatal errors cause 'die' to be called, since they are unrecoverable.
+Currently, level 'error' is not used. Fatal errors cause 'die' to be called, since they are unrecoverable. See L</Under what circumstances does the code call 'die'?>.
 
 =item o Reporting
 
@@ -3879,6 +3893,30 @@ These are reported at level 'warning'.
 
 =back
 
+=head2 Under what circumstances does the code call 'die'?
+
+=over 4
+
+=item o When there is a typo in the field name passed in to check_length()
+
+This is a programming error.
+
+=item o When an input file is not specified
+
+This is a user (run time) error.
+
+=item o When there is a syntax error in a GEDCOM record
+
+This is a user (data preparation) error.
+
+=back
+
+=head2 What file charsets are supported?
+
+ASCII - i.e. nothing else has been tested.
+
+The code should really ought to support ANSEL (a superset of ASCII), ASCII, UTF-8 and UTF-16 (known to GEDCOM as UNICODE).
+
 =head1 Machine-Readable Change Log
 
 The file CHANGES was converted into Changelog.ini by L<Module::Metadata::Changes>.
@@ -3886,6 +3924,88 @@ The file CHANGES was converted into Changelog.ini by L<Module::Metadata::Changes
 =head1 Version Numbers
 
 Version numbers < 1.00 represent development versions. From 1.00 up, they are production versions.
+
+=head1 References
+
+=over 4
+
+=item o The original Perl L<Gedcom>
+
+=item o GEDCOM
+
+=over 4
+
+=item o L<GEDCOM Specification|http://wiki.webtrees.net/File:Ged551-5.pdf>
+
+=item o L<GEDCOM Validation|http://www.tamurajones.net/GEDCOMValidation.xhtml>
+
+=item o L<GEDCOM Tags|http://www.tamurajones.net/GEDCOMTags.xhtml>
+
+=back
+
+=item o Usage of non-standard tags
+
+=over 4
+
+=item o L<http://www.tamurajones.net/FTWTEXT.xhtml>
+
+This is apparently the worst offender she's seen. Search that page for 'tags'.
+
+=item o L<http://www.tamurajones.net/GenoPro2011.xhtml>
+
+=item o L<http://www.tamurajones.net/GenoPro2007.xhtml>
+
+=item o L<http://www.tamurajones.net/TheFTWTEXTProblem.xhtml>
+
+=back
+
+=item o Other articles on Tamura's site
+
+=over 4
+
+=item o L<http://www.tamurajones.net/FiveFreakyFeaturesYourGenealogySoftwareShouldNotHave.xhtml>
+
+=item o L<http://www.tamurajones.net/TwelveOrdinaryMustHaveGenealogySoftwareFeatures.xhtml>
+
+=back
+
+=item o Other projects
+
+Many of these are discussed on Tamura's site.
+
+=over 4
+
+=item o L<http://bettergedcom.wikispaces.com/>
+
+=item o L<http://www.ngsgenealogy.org/cs/GenTech_Projects>
+
+=item o L<http://gdmxml.fugal.net/>
+
+=item o L<http://www.cosoft.org/genxml/>
+
+=item o L<http://www.sunflower.com/~billk/GEDC/>
+
+=item o L<http://ancestorsnow.blogspot.com/2011/07/vged.html>
+
+=item o L<http://www.tamurajones.net/GEDCOMValidation.xhtml>
+
+=item o L<http://webtrees.net/>
+
+=item o L<http://swoodbridge.com/Genealogy/lifelines/>
+
+=item o L<http://deadendssoftware.blogspot.com/>
+
+=item o L<http://www.legacyfamilytree.com/>
+
+=item o L<https://devnet.familysearch.org/docs/api-overview>
+
+=back
+
+=back
+
+=head1 The Gedcom Mailing List
+
+Contact perl-gedcom-help@perl.org.
 
 =head1 Support
 
