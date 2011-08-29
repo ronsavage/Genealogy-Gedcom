@@ -73,9 +73,15 @@ sub cross_check_xrefs
 		$target{$$item{xref} } = 1                     if ($$item{rank} eq 'Item');
 	}
 
+	my(%seen);
+
 	for my $link (@link)
 	{
+		next if ($seen{$$link[0]});
+
 		$self -> log(warning => "Warning: Line $$link[1]. Link $$link[0] does not point to an existing xref") if (! $target{$$link[0]}); 
+
+		$seen{$$link[0]} = 1;
 	}
 
 } # End of cross_check_xrefs.
@@ -2021,6 +2027,30 @@ sub tag_name_of_source_data
 
 # --------------------------------------------------
 
+sub tag_name_personal
+{
+	my($index, $line) = @_;
+	my($id) = 'name_personal';
+
+	$myself -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][6]')");
+	$myself -> check_length($id, $$line[$index]);
+	$myself -> push_item($$line[$index], 'Individual');
+
+	return tag_advance
+		(++$index,
+		 $line,
+		 {
+			 FONE => \&tag_name_phonetic_variation,
+			 ROMN => \&tag_name_romanized_variation,
+			 TYPE => \&tag_name_type,
+			 tag_personal_name_piece_tags(),
+		 }
+		);
+
+} # End of tag_name_personal.
+
+# --------------------------------------------------
+
 sub tag_name_phonetic_variation
 {
 	my($index, $line) = @_;
@@ -2357,30 +2387,6 @@ sub tag_personal_name_pieces
 		);
 
 } # End of tag_personal_name_pieces.
-
-# --------------------------------------------------
-
-sub tag_name_personal
-{
-	my($index, $line) = @_;
-	my($id) = 'name_personal';
-
-	$myself -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][6]')");
-	$myself -> check_length($id, $$line[$index]);
-	$myself -> push_item($$line[$index], 'Individual');
-
-	return tag_advance
-		(++$index,
-		 $line,
-		 {
-			 FONE => \&tag_name_phonetic_variation,
-			 ROMN => \&tag_name_romanized_variation,
-			 TYPE => \&tag_name_type,
-			 tag_personal_name_piece_tags(),
-		 }
-		);
-
-} # End of tag_name_personal.
 
 # --------------------------------------------------
 
@@ -3299,6 +3305,7 @@ sub tag_trailer
 
 	$myself -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][6]')");
 	$myself -> push_item($$line[$index], 'Trailer');
+	$myself -> log(warning => "Line: $$line[$index][0]. The unknown tag $$line[$index][3] was detected") if ($$line[$index][3] ne 'TRLR');
 
 	return ++$index;
 
@@ -3658,7 +3665,15 @@ They are defined by having a leading '_', as well as same syntax as GEDCOM files
 
 =back
 
+Each user-defined tag is stand-alone, meaning they can't be extended with CONC or CONT tags in the way some GEDCOM tags can.
+
 See data/sample.4.ged.
+
+=head2 How are CONC and CONT tags handled?
+
+Nothing is done with them, meaning e.g. text flowing from a NOTE (say) onto a CONC or CONT is not concatenated.
+
+Currently then, even GEDCOM tags are stand-alone.
 
 =head2 How is the lexed data stored in RAM?
 
@@ -3813,7 +3828,7 @@ Details:
 
 =item o Cross-references
 
-Xrefs (@...@) are checked that they point to a target which exists.
+Xrefs (@...@) are checked that they point to a target which exists. Each dangling xref is only reported once.
 
 =item o String lengths
 
@@ -3830,6 +3845,10 @@ Validation is mandatory, even with the 'strict' option set to 0. 'strict' only a
 Tag nesting is validated by the mechanism of nested function calls, with each function knowing what tags it handles, and with each nested call handling its own tags.
 
 This process starts with the call to tag_lineage(0, $line) in method L</run()>.
+
+=item o Unexpected tags
+
+The lexer reports the first unexpected tag, meaning it is not a GEDCOM tag and it does not start with '_'.
 
 =back
 
@@ -4011,11 +4030,11 @@ Contact perl-gedcom-help@perl.org.
 
 Email the author, or log a bug on RT:
 
-L<https://rt.cpan.org/Public/Dist/Display.html?Name=Genealogy::Gedcom::Reader>.
+L<https://rt.cpan.org/Public/Dist/Display.html?Name=Genealogy::Gedcom>.
 
 =head1 Author
 
-L<Genealogy::Gedcom::Reader> was written by Ron Savage I<E<lt>ron@savage.net.auE<gt>> in 2011.
+L<Genealogy::Gedcom::Reader::Lexer> was written by Ron Savage I<E<lt>ron@savage.net.auE<gt>> in 2011.
 
 Home page: L<http://savage.net.au/index.html>.
 
