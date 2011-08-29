@@ -3636,6 +3636,12 @@ This is the only method the caller needs to call. All parameters are supplied to
 
 Returns 0 for success and 1 for failure.
 
+=head2 strict([0 or 1])
+
+The [] indicate an optional parameter.
+
+Get or set the value which determines whether or not to use 0 or 1 as the minimum string length.
+
 =head1 FAQ
 
 =head2 How are user-defined tags handled?
@@ -3804,6 +3810,8 @@ Xrefs (@...@) are checked that they point to a target which exists.
 =item o String lengths
 
 Maximum string lengths are checked as per L<the GEDCOM Specification Ged551-5.pdf|http://wiki.webtrees.net/File:Ged551-5.pdf>.
+
+Minimum string lengths are checked as per the value of the 'strict' option to L<new()|Constructor and Initialization>.
 
 =item o Strict 'v' Mandatory
 
