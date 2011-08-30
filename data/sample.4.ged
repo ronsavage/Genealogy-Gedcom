@@ -9,7 +9,7 @@
 4         CTRY Australia
 3       EMAIL ron@savage.net.au
 3       WWW http://savage.net.au
-2     DATA
+2     DATA Perl
 3       COPR Copyright 2011, Ron Savage
 1   NOTE
 2     CONT This file is based from test data in Paul Johnson's Gedcom.pm
@@ -33,7 +33,7 @@
 0 @I1@ _TDD Four
 1   _TEE Five
 
-0 @I1@ INDI
+0 @I2@ INDI
 1   NAME Given Name /Surname/
 1   BIRT
 2     DATE 01-01-2000
