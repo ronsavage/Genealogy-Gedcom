@@ -69,8 +69,20 @@ sub cross_check_xrefs
 
 	for my $item ($self -> items -> print)
 	{
-		push @link, [$$item{data}, $$item{line_count}] if ($$item{type} =~ /^Link/);
-		$target{$$item{xref} } = 1                     if ($$item{level} == 0);
+		if ($$item{type} =~ /^Link/)
+		{
+			push @link, [$$item{data}, $$item{line_count}];
+		}
+
+		if ( ($$item{level} == 0) && $$item{xref})
+		{
+			if ($target{$$item{xref} })
+			{
+				$self -> log(warning => "Warning. Line $$item{line_count}. Xref $$item{xref} was also used on line $target{$$item{xref} }");
+			}
+
+			$target{$$item{xref} } = $$item{line_count};
+		}
 	}
 
 	my(%seen);
@@ -3934,6 +3946,10 @@ Details:
 =item o Cross-references
 
 Xrefs (@...@) are checked that they point to a target which exists. Each dangling xref is only reported once.
+
+=item o Duplicate xrefs
+
+Xrefs (@...@) are checked for uniqueness.
 
 =item o String lengths
 
