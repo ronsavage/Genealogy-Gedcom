@@ -36,10 +36,10 @@
 0 @I1@ INDI
 1   NAME Given Name /Surname/
 1   BIRT
-2     DATE Saturday, 1st January 2000
+2     DATE 01-01-2000
 2     AGE 0
 1   BIRT
-2     DATE Sunday, 2nd January 2000
+2     DATE 02-01-2000
 1   RIN 83
 2     _TFF Six
 1   _TGG Seven
