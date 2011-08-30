@@ -521,7 +521,9 @@ sub tag_address_line
 	$myself -> push_item($$line[$index], 'Address');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 ADR1 => \&tag_address_line1,
@@ -627,6 +629,7 @@ sub tag_address_structure
 
 	return tag_advance
 		(
+		 $id,
 		 $index,
 		 $line,
 		 {
@@ -670,19 +673,27 @@ sub tag_address_web_page
 
 sub tag_advance
 {
-	my($index, $line, $jump) = @_;
+	my($id, $index, $line, $jump) = @_;
+	my($level) = $$line[$index][1];
+	my($tag)   = $$line[$index][3];
 
-	while ( ($index <= $#$line) && $$jump{$$line[$index][3]})
+	#$myself -> log(debug => "\tEnter tag_advance. Caller: tag_$id. Line: $$line[$index][0]. Index: $index. Tag: $tag. Level: $level");
+
+	while ( ($index < $#$line) && ($$line[$index + 1][1] >= $level) )
 	{
-		$index = $$jump{$$line[$index][3]} -> ($index, $line);
-	}
-
-	while ( ($index <= $#$line) && ($$line[$index][3] =~ /^_/) )
-	{
-		$myself -> push_item($$line[$index], 'User');
-
 		$index++;
+
+		if ($$jump{$$line[$index][3]})
+		{
+			$index = $$jump{$$line[$index][3]} -> ($index, $line);
+		}
+		else
+		{
+			$myself -> push_item($$line[$index], 'User');
+		}
 	}
+
+	#$myself -> log(debug => "\tLeave tag_advance. Caller: tag_$id, Line: $$line[$index][0]. Index: $index. Tag: $tag. Level: $level");
 
 	return $index;
 
@@ -744,7 +755,9 @@ sub tag_approved_system_id
 	$myself -> push_item($$line[$index], '');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 CORP => \&tag_name_of_business,
@@ -767,7 +780,9 @@ sub tag_association_structure
 	$myself -> push_item($$line[$index], 'Individual');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 NOTE => \&tag_note_structure,
@@ -804,7 +819,9 @@ sub tag_bapl_conl
 	$myself -> push_item($$line[$index], 'Individual');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 DATE => \&tag_date_lds_ord,
@@ -830,7 +847,9 @@ sub tag_caste_name
 	$myself -> push_item($$line[$index], 'Individual');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 DATE => \&tag_change_date1,
@@ -881,7 +900,9 @@ sub tag_change_date1
 	$myself -> push_item($$line[$index], '');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 DATE => \&tag_change_date,
@@ -903,7 +924,9 @@ sub tag_change_date
 	$myself -> push_item($$line[$index], '');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 TIME => \&tag_time_value,
@@ -924,7 +947,9 @@ sub tag_character_set
 	$myself -> push_item($$line[$index], 'Header');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 VERS => \&tag_version_number,
@@ -973,7 +998,9 @@ sub tag_child_to_family_link
 	$myself -> push_item($$line[$index], 'Link to FAM');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 NOTE => \&tag_note_structure,
@@ -1053,7 +1080,9 @@ sub tag_copyright_source_data
 	$myself -> push_item($$line[$index], 'Copyright');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 CONC => \&tag_concat,
@@ -1164,7 +1193,9 @@ sub tag_endl
 	$myself -> push_item($$line[$index], 'Individual');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 DATE => \&tag_date_lds_ord,
@@ -1189,7 +1220,9 @@ sub tag_event_detail
 	$myself -> push_item($$line[$index], 'Event');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 tag_event_detail_tags(),
@@ -1245,7 +1278,9 @@ sub tag_event_type_cited_from
 	$myself -> push_item($$line[$index], 'Event');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 ROLE => \&tag_role_in_event,
@@ -1266,7 +1301,9 @@ sub tag_events_recorded
 	$myself -> push_item($$line[$index], 'Event');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 DATE => \&tag_date_period,
@@ -1287,7 +1324,9 @@ sub tag_family_event_detail
 	$myself -> push_item($$line[$index], 'Event');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 HUSB => \&tag_age_at_event,
@@ -1324,7 +1363,9 @@ sub tag_family_record
 	$myself -> push_item($$line[$index], 'Family');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 ANUL  => \&tag_family_event_detail,
@@ -1368,7 +1409,9 @@ sub tag_gedcom
 	$myself -> push_item($$line[$index], 'Header');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 FORM => \&tag_gedcom_form,
@@ -1433,12 +1476,12 @@ sub tag_header
 	$myself -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][6]')");
 	$myself -> push_item($$line[$index], 'Header');
 
-	# Special case: Don't call tag_advance(). See comment below.
-
-	$index++;
-
-	my(%jump) =
+	return tag_advance
 		(
+		 $id,
+		 $index,
+		 $line,
+		 {
 		 CHAR => \&tag_character_set,
 		 COPR => \&tag_copyright_gedcom_file,
 		 DATE => \&tag_transmission_date,
@@ -1451,18 +1494,8 @@ sub tag_header
 		 SUBM => \&tag_submitter_xref,
 		 SUBN => \&tag_submission_xref,
 		 SOUR => \&tag_approved_system_id,
+		 }
 		);
-
-	# Note: The extra test here, compared to all other code, is to ensure we drop out of the header
-	# when we encounter the first record which has a level of 0, and in particular a SUBM record
-	# immediately following the header, since SUBM can occur within the header too.
-
-	while ( ($index <= $#$line) && ($$line[$index][1] > 0) && $jump{$$line[$index][3]})
-	{
-		$index = $jump{$$line[$index][3]} -> ($index, $line);
-	}
-
-	return $index;
 
 } # End of tag_header.
 
@@ -1529,7 +1562,9 @@ sub tag_individual_event_detail
 	$myself -> push_item($$line[$index], 'Event');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 AGE => \&tag_age_at_event,
@@ -1553,6 +1588,7 @@ sub tag_individual_event_structure_tags
 		 BIRT => \&tag_individual_event_detail,
 		 BURI => \&tag_individual_event_detail,
 		 CENS => \&tag_individual_event_detail,
+		 CHAN => \&tag_change_date1,
 		 CHR  => \&tag_individual_event_detail,
 		 CHRA => \&tag_individual_event_detail,
 		 CONF => \&tag_individual_event_detail,
@@ -1583,7 +1619,9 @@ sub tag_individual_record
 	$myself -> push_item($$line[$index], 'Individual');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 AFN  => \&tag_ancestral_file_number,
@@ -1653,7 +1691,9 @@ sub tag_lds_baptism_date_status
 	$myself -> push_item($$line[$index], 'Individual');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 DATE => \&tag_change_date1,
@@ -1674,7 +1714,9 @@ sub tag_lds_child_sealing_date_status
 	$myself -> push_item($$line[$index], 'Individual');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 DATE => \&tag_change_date1,
@@ -1695,7 +1737,9 @@ sub tag_lds_endowment_date_status
 	$myself -> push_item($$line[$index], 'Individual');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 DATE => \&tag_change_date1,
@@ -1715,7 +1759,9 @@ sub tag_lds_spouse_sealing
 	$myself -> push_item($$line[$index], 'Family');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 DATE => \&tag_date_lds_ord,
@@ -1741,7 +1787,9 @@ sub tag_lds_spouse_sealing_date_status
 	$myself -> push_item($$line[$index], 'Family');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 DATE => \&tag_change_date1,
@@ -1756,19 +1804,20 @@ sub tag_lineage
 {
 	my($index, $line) = @_;
 	my($id) = 'lineage';
-
-	$myself -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][6]')");
-
-	$index = tag_header($index, $line);
-	$index = tag_advance
-		($index,
+	$index  = tag_header($index, $line);
+	$index  = tag_advance
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 SUBN => \&tag_submission_record,
 		 }
 		);
 	$index = tag_advance
-		($index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 FAM  => \&tag_family_record,
@@ -1796,7 +1845,9 @@ sub tag_map
 	$myself -> push_item($$line[$index], 'Place');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 LATI => \&tag_place_latitude,
@@ -1817,7 +1868,9 @@ sub tag_multimedia_link
 	$myself -> push_item($$line[$index], 'Link to OBJE');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 FILE => \&tag_multimedia_link_file_refn,
@@ -1839,7 +1892,9 @@ sub tag_multimedia_link_file_refn
 	$myself -> push_item($$line[$index], 'Multimedia');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 FORM => \&tag_multimedia_link_format,
@@ -1860,7 +1915,9 @@ sub tag_multimedia_link_format
 	$myself -> push_item($$line[$index], 'Multimedia');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 MEDI => \&tag_source_media_type,
@@ -1880,7 +1937,9 @@ sub tag_multimedia_record
 	$myself -> push_item($$line[$index], 'Multimedia');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 CHAN => \&tag_change_date1,
@@ -1906,7 +1965,9 @@ sub tag_multimedia_record_file_refn
 	$myself -> push_item($$line[$index], 'Multimedia');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 FORM => \&tag_multimedia_record_format,
@@ -1928,7 +1989,9 @@ sub tag_multimedia_record_format
 	$myself -> push_item($$line[$index], 'Multimedia');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 TYPE => \&tag_source_media_type,
@@ -1949,7 +2012,9 @@ sub tag_name_of_business
 	$myself -> push_item($$line[$index], '');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 tag_address_structure_tags(),
@@ -2015,7 +2080,9 @@ sub tag_name_of_source_data
 	$myself -> push_item($$line[$index], 'Source');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 DATE => \&tag_publication_date,
@@ -2037,7 +2104,9 @@ sub tag_name_personal
 	$myself -> push_item($$line[$index], 'Individual');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 FONE => \&tag_name_phonetic_variation,
@@ -2061,7 +2130,9 @@ sub tag_name_phonetic_variation
 	$myself -> push_item($$line[$index], 'Individual');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 TYPE => \&tag_phonetic_type,
@@ -2172,7 +2243,9 @@ sub tag_name_romanized_variation
 	$myself -> push_item($$line[$index], 'Individual');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 TYPE => \&tag_romanized_type,
@@ -2253,7 +2326,9 @@ sub tag_note_record
 	$myself -> push_item($$line[$index], 'Note');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 CHAN => \&tag_change_date1,
@@ -2278,7 +2353,9 @@ sub tag_note_structure
 	$myself -> push_item($$line[$index], 'Note');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 CONC => \&tag_concat,
@@ -2379,7 +2456,9 @@ sub tag_personal_name_pieces
 	# Special case. $index not ++$index.
 
 	return tag_advance
-		($index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 tag_personal_name_piece_tags
@@ -2444,7 +2523,9 @@ sub tag_place
 	$myself -> push_item($$line[$index], 'Place');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 FORM => \&tag_place_hierarchy,
@@ -2525,7 +2606,9 @@ sub tag_place_name
 	$myself -> push_item($$line[$index], 'Place');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 FORM => \&tag_place_hierarchy,
@@ -2550,7 +2633,9 @@ sub tag_place_phonetic_variation
 	$myself -> push_item($$line[$index], 'Place');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 TYPE => \&tag_phonetic_type,
@@ -2571,7 +2656,9 @@ sub tag_place_romanized_variation
 	$myself -> push_item($$line[$index], 'Place');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 TYPE => \&tag_romanized_type,
@@ -2666,7 +2753,9 @@ sub tag_repository_record
 	$myself -> push_item($$line[$index], 'Repository');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 CHAN => \&tag_change_date1,
@@ -2795,7 +2884,9 @@ sub tag_slgc
 	$myself -> push_item($$line[$index], 'Individual');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 DATE => \&tag_date_lds_ord,
@@ -2851,7 +2942,9 @@ sub tag_source_citation
 	$myself -> push_item($$line[$index], 'Source');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 CONC => \&tag_concat,
@@ -2879,7 +2972,9 @@ sub tag_source_citation_data
 	$myself -> push_item($$line[$index], 'Source');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 DATE => \&tag_entry_recording_date,
@@ -2900,7 +2995,9 @@ sub tag_source_data
 	$myself -> push_item($$line[$index], 'Source');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 AGNC => \&tag_responsible_agency,
@@ -2923,7 +3020,9 @@ sub tag_source_descriptive_title
 	$myself -> push_item($$line[$index], 'Source');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 CONC => \&tag_concat,
@@ -2990,7 +3089,9 @@ sub tag_source_originator
 	$myself -> push_item($$line[$index], 'Source');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 CONC => \&tag_concat,
@@ -3026,7 +3127,9 @@ sub tag_source_publication_facts
 	$myself -> push_item($$line[$index], 'Source');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 CONC => \&tag_concat,
@@ -3048,7 +3151,9 @@ sub tag_source_record
 	$myself -> push_item($$line[$index], 'Source');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 ABBR => \&tag_source_filed_by_entry,
@@ -3079,7 +3184,9 @@ sub tag_source_record_data
 	$myself -> push_item($$line[$index], 'Source');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 AGNC => \&tag_responsible_agency,
@@ -3101,7 +3208,9 @@ sub tag_spouse_to_family_link
 	$myself -> push_item($$line[$index], 'Link to FAM');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 NOTE => \&tag_note_structure,
@@ -3121,7 +3230,9 @@ sub tag_submission_record
 	$myself -> push_item($$line[$index], 'Link to SUBM');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 ANCE => \&tag_generations_of_ancestors,
@@ -3148,7 +3259,9 @@ sub tag_submission_repository_citation
 	$myself -> push_item($$line[$index], 'Submission');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 CALN => \&tag_source_call_number,
@@ -3184,7 +3297,9 @@ sub tag_submitter_record
 	$myself -> push_item($$line[$index], 'Submitter');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 CHAN => \&tag_change_date1,
@@ -3271,7 +3386,9 @@ sub tag_text_from_source
 	$myself -> push_item($$line[$index], '');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 CONC => \&tag_concat,
@@ -3323,7 +3440,9 @@ sub tag_transmission_date
 	$myself -> push_item($$line[$index], 'Header');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 TIME => \&tag_time_value,
@@ -3344,7 +3463,9 @@ sub tag_user_reference_number
 	$myself -> push_item($$line[$index], '');
 
 	return tag_advance
-		(++$index,
+		(
+		 $id,
+		 $index,
 		 $line,
 		 {
 			 TYPE => \&tag_user_reference_type,
@@ -3947,7 +4068,7 @@ A function can be used as \&tag_x, but the equivalent usage of a method requires
 
 =head2 How do I change the version of the GEDCOM grammar supported?
 
-Errr, by changing the source code, unfortunately.
+Errr, by changing the source code - unfortunately.
 
 =head2 What file charsets are supported?
 
