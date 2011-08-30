@@ -3945,11 +3945,11 @@ Details:
 
 =item o Cross-references
 
-Xrefs (@...@) are checked that they point to a target which exists. Each dangling xref is only reported once.
+Xrefs (pointers) are checked that they point to an xref which exists. Each dangling xref is only reported once.
 
 =item o Duplicate xrefs
 
-Xrefs (@...@) are checked for uniqueness.
+Xrefs which are (potentially) pointed to are checked for uniqueness.
 
 =item o String lengths
 
