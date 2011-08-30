@@ -3554,6 +3554,8 @@ Turn on debugging (extra logging) with:
 
 perl -Ilib scripts/lex.pl -i data/royal.ged -report_items 1 -strict 1 -max debug
 
+royal.ged was downloaded from L<http://www.vjet.f2s.com/ftree/download.html>. It's more up-to-date than the one shipped with L<Gedcom>.
+
 Various sample GEDCOM files may be found in the data/ directory in the distro.
 
 =head1 Description
