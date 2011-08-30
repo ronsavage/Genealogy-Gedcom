@@ -3974,7 +3974,7 @@ Validation is mandatory, even with the 'strict' option set to 0. 'strict' only a
 
 =item o Tag nesting
 
-Tag nesting is validated by the mechanism of nested function calls, with each function knowing what tags it handles, and with each nested call handling its own tags.
+Tag nesting is validated by the mechanism of nested method calls, with each method (called tag_*) knowing what tags it handles, and with each nested call handling its own tags.
 
 This process starts with the call to tag_lineage(0, $line) in method L</run()>.
 
@@ -4029,9 +4029,9 @@ L<A proposal re UUIDs|http://savage.net.au/Perl-modules/html/genealogy/uuid.html
 
 =item o Debugging
 
-When new() is called as new(maxlevel => 'debug'), each function entry is logged at level 'debug'.
+When new() is called as new(maxlevel => 'debug'), each method entry is logged at level 'debug'.
 
-This has the effect of tracing all code which processes tags, since this is done with function calls. Method calls are not traced.
+This has the effect of tracing all code which processes tags.
 
 Since the default value of 'maxlevel' is 'info', all this output is suppressed by default. Such output is mainly for the author's benefit.
 
@@ -4071,15 +4071,9 @@ This is a user (data preparation) error.
 
 =back
 
-=head2 Why did you use functions and not methods in all the jump tables?
-
-Because of the effort of taking references to methods.
-
-A function can be used as sub{return $self -> tag_x, but the equivalent usage of a method requires sub{$self -> tag_x}. Even if the Perl compiler optimizes away all the sub calls(shift, shift)},
-
 =head2 How do I change the version of the GEDCOM grammar supported?
 
-Errr, by changing the source code - unfortunately.
+By sub-classing.
 
 =head2 What file charsets are supported?
 
