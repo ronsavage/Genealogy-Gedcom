@@ -22,7 +22,7 @@ fieldhash my %report_items => 'report_items';
 fieldhash my %result       => 'result';
 fieldhash my %strict       => 'strict';
 
-our $VERSION = '0.60';
+our $VERSION = '0.80';
 
 # --------------------------------------------------
 
@@ -36,7 +36,7 @@ sub check_length
 
 	if ( ($length < $min) || ($length > $max) )
 	{
-		$self -> log(warning => "Warning: Line: $$line[0]. Field: $key. Value: $value. Length: $length. Valid length range $min .. $max");
+		$self -> log(warning => "Line: $$line[0]. Field: $key. Value: $value. Length: $length. Valid length range $min .. $max");
 	}
 
 } # End of check_length.
@@ -77,7 +77,7 @@ sub cross_check_xrefs
 		{
 			if ($target{$$item{xref} })
 			{
-				$self -> log(warning => "Warning. Line $$item{line_count}. Xref $$item{xref} was also used on line $target{$$item{xref} }");
+				$self -> log(warning => "Line $$item{line_count}. Xref $$item{xref} was also used on line $target{$$item{xref} }");
 			}
 
 			$target{$$item{xref} } = $$item{line_count};
@@ -90,7 +90,7 @@ sub cross_check_xrefs
 	{
 		next if ($seen{$$link[0]});
 
-		$self -> log(warning => "Warning: Line $$link[1]. Link $$link[0] does not point to an existing xref") if (! $target{$$link[0]}); 
+		$self -> log(warning => "Line $$link[1]. Link $$link[0] does not point to an existing xref") if (! $target{$$link[0]}); 
 
 		$seen{$$link[0]} = 1;
 	}
@@ -3443,8 +3443,8 @@ sub tag_trailer
 	my($id) = 'trailer';
 
 	$self -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][5]')");
-	$self -> push_item($$line[$index], 'Trailer');
 	$self -> log(warning => "Line: $$line[$index][0]. The unknown tag $$line[$index][3] was detected") if ($$line[$index][3] ne 'TRLR');
+	$self -> push_item($$line[$index], 'Trailer');
 
 	return ++$index;
 

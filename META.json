@@ -39,15 +39,15 @@
    "provides" : {
       "Genealogy::Gedcom" : {
          "file" : "lib/Genealogy/Gedcom.pm",
-         "version" : "0.60"
+         "version" : "0.80"
       },
       "Genealogy::Gedcom::Reader" : {
          "file" : "lib/Genealogy/Gedcom/Reader.pm",
-         "version" : "0.60"
+         "version" : "0.80"
       },
       "Genealogy::Gedcom::Reader::Lexer" : {
          "file" : "lib/Genealogy/Gedcom/Reader/Lexer.pm",
-         "version" : "0.60"
+         "version" : "0.80"
       }
    },
    "release_status" : "stable",
@@ -56,5 +56,5 @@
          "http://opensource.org/licenses/artistic-license.php"
       ]
    },
-   "version" : "0.60"
+   "version" : "0.80"
 }

@@ -17,13 +17,13 @@ name: Genealogy-Gedcom
 provides:
   Genealogy::Gedcom:
     file: lib/Genealogy/Gedcom.pm
-    version: 0.60
+    version: 0.80
   Genealogy::Gedcom::Reader:
     file: lib/Genealogy/Gedcom/Reader.pm
-    version: 0.60
+    version: 0.80
   Genealogy::Gedcom::Reader::Lexer:
     file: lib/Genealogy/Gedcom/Reader/Lexer.pm
-    version: 0.60
+    version: 0.80
 requires:
   Getopt::Long: 2.38
   Hash::FieldHash: 0.1
@@ -33,4 +33,4 @@ requires:
   Set::Array: 0.23
 resources:
   license: http://opensource.org/licenses/artistic-license.php
-version: 0.60
+version: 0.80

@@ -23,4 +23,5 @@ README
 scripts/find.unused.limits.pl
 scripts/lex.pl
 scripts/read.pl
+t/lex.t
 t/pod.t
