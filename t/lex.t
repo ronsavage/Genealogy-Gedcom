@@ -22,6 +22,6 @@ my($lexer)     = Genealogy::Gedcom::Reader::Lexer -> new
 
 my($result)     = $lexer -> run;
 my(@item)       = @{$lexer -> items};
-my($item_count) = 43;
+my($item_count) = 50;
 
 ok(scalar @item == $item_count, "$file_name really does contain $item_count items");
