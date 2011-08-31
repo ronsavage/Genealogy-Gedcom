@@ -1,4 +1,10 @@
 Revision history for Perl extension Genealogy::Gedcom.
 
+0.81  Web Aug 31 12:48:00 2011
+	  - Unreleased.
+	  - Update UUID proposal with use case.
+	  - Rename UUID proposal from docs/uuid.txt to docs/uuid.proposal.pod, and add docs/uuid.proposal.html.
+	  - Remove obsolete docs/rationale.*.
+
 0.80  Mon Aug 29 12:00:00 2011
 	  - Initial release.
