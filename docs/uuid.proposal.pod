@@ -45,6 +45,40 @@ This document does not attempt to define any mechanism whereby data is stored in
 
 It discusses everthing in terms of GEDCOM-compatible (i.e. stand-alone) files.
 
+=head2 A Use Case for UUIDs
+
+=over 4
+
+=item o Import
+
+Import 2 GEDCOM files into a program which uses UUIDs, assigning a
+UUID to each input file.
+
+=item o Match individuals
+
+The program (somehow) decides an INDI record from file A matches an
+INDI record from file B. Let's say the names match.
+
+=item o Flag inconsistencies
+
+Then when there is inconsistent data (e.g. the asserted birthdays of
+the individual are different in the 2 files), the program saves the
+respective files' UUIDs I<attached to each to birthday>.
+
+=item o Multiple versions of data
+
+In this manner inconsistent data is saved permanently (carried
+forward in time), without any specific determination that one version is
+'right' and one is 'wrong'.
+
+=item o Returning to the roots
+
+At some later time we can then use these UUIDs to determine which
+source the specific values of the birthdays came from. Naturally any
+piece of data can be treated likewise.
+
+=back
+
 =head1 Identifying Unique Identifiers per INDI
 
 Proposal: Use _UID, UUID and TYPE as the GEDCOM-like tags for UUIDs.
