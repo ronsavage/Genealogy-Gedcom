@@ -28,18 +28,37 @@ our $VERSION = '0.80';
 
 # --------------------------------------------------
 
+sub check_date
+{
+	my($self, $id, $line, $type) = @_;
+
+	if ($self -> check_length($id, $line) )
+	{
+		$self -> push_item($line, 'Invalid date');
+	}
+	else
+	{
+		my($date) = Genealogy::Gedcom::Reader::Lexer::Date -> new(candidate => $$line[4], logger => $self -> logger) -> parse;
+
+		$self -> log(info => "Candidate: $date");
+		$self -> push_item($line, $type);
+	}
+
+} # End of check_date.
+# --------------------------------------------------
+
 sub check_length
 {
-	my($self, $key, $line) = @_;
+	my($self, $id, $line) = @_;
 	my($value)  = $$line[4];
 	my($length) = length($value);
-	my($min)    = $self -> get_min_length($key, $line);
-	my($max)    = $self -> get_max_length($key, $line);
+	my($min)    = $self -> get_min_length($id, $line);
+	my($max)    = $self -> get_max_length($id, $line);
 	my($result) = ( ($length < $min) || ($length > $max) ) ? 1 : 0;
 
 	if ($result)
 	{
-		$self -> log(warning => "Line: $$line[0]. Field: $key. Value: $value. Length: $length. Valid length range $min .. $max");
+		$self -> log(warning => "Line: $$line[0]. Field: $id. Value: $value. Length: $length. Valid length range $min .. $max");
 	}
 
 	# Return 0 for success and 1 for failure.
@@ -120,7 +139,7 @@ sub get_gedcom_data_from_file
 
 sub get_max_length
 {
-	my($self, $key, $line) = @_;
+	my($self, $id, $line) = @_;
 	my(%max) =
 		(
 		 address_city => 60,
@@ -265,9 +284,9 @@ sub get_max_length
 		 year_greg => 7,
 		);
 
-	# This dies rather than calls log(error...) because it's a coding error if $key is mis-spelt.
+	# This dies rather than calls log(error...) because it's a coding error if $id is mis-spelt.
 
-	return $max{$key} || die "Error: Line: $$line[0]. Invalid field name in get_max_length($key)";
+	return $max{$id} || die "Error: Line: $$line[0]. Invalid field name in get_max_length($id)";
 
 } # End of get_max_length.
 
@@ -275,7 +294,7 @@ sub get_max_length
 
 sub get_min_length
 {
-	my($self, $key, $line) = @_;
+	my($self, $id, $line) = @_;
 
 	return $self -> strict;
 
@@ -937,8 +956,7 @@ sub tag_change_date
 	my($id) = 'change_date';
 
 	$self -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][5]')");
-	$self -> check_length($id, $$line[$index]);
-	$self -> push_item($$line[$index], '');
+	$self -> check_date($id, $$line[$index], '');
 
 	return $self -> tag_advance
 		(
@@ -1147,8 +1165,7 @@ sub tag_date_lds_ord
 	my($id) = 'date_lds_ord';
 
 	$self -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][5]')");
-	$self -> check_length($id, $$line[$index]);
-	$self -> push_item($$line[$index], 'Family');
+	$self -> check_date($id, $$line[$index], 'Family');
 
 	return ++$index;
 
@@ -1177,8 +1194,7 @@ sub tag_date_value
 	my($id) = 'date_value';
 
 	$self -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][5]')");
-	$self -> check_length($id, $$line[$index]);
-	$self -> push_item($$line[$index], '');
+	$self -> check_date($id, $$line[$index], '');
 
 	return ++$index;
 
@@ -1225,6 +1241,20 @@ sub tag_endl
 		);
 
 } # End of tag_endl.
+
+# --------------------------------------------------
+
+sub tag_entry_recording_date
+{
+	my($self, $index, $line) = @_;
+	my($id) = 'entry_recording_date';
+
+	$self -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][5]')");
+	$self -> check_date($id, $$line[$index], 'Source');
+
+	return ++$index;
+
+} # End of tag_entry_recording_date.
 
 # --------------------------------------------------
 
@@ -1780,7 +1810,7 @@ sub tag_lds_spouse_sealing
 	my($id) = 'lds_spouse_sealing';
 
 	$self -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][5]')");
-	$self -> push_item($$line[$index], 'Family');
+	$self -> check_date($id, $$line[$index], 'Family');
 
 	return $self -> tag_advance
 		(
@@ -2720,17 +2750,7 @@ sub tag_publication_date
 	my($id) = 'publication_date';
 
 	$self -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][5]')");
-
-	if ($self -> check_length($id, $$line[$index]) )
-	{
-		$self -> push_item($$line[$index], 'Invalid date');
-	}
-	else
-	{
-		my($date) = Genealogy::Gedcom::Reader::Lexer::Date -> new(candidate => $$line[$index][4], logger => $self -> logger) -> parse;
-
-		$self -> log(info => "Candidate: $date");
-	}
+	$self -> check_date($id, $$line[$index], 'Date');
 
 	return ++$index;
 
@@ -3474,17 +3494,7 @@ sub tag_transmission_date
 	my($id) = 'transmission_date';
 
 	$self -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][5]')");
-
-	if ($self -> check_length($id, $$line[$index]) )
-	{
-		$self -> push_item($$line[$index], 'Invalid date');
-	}
-	else
-	{
-		my($date) = Genealogy::Gedcom::Reader::Lexer::Date -> new(candidate => $$line[$index][4], logger => $self -> logger) -> parse;
-
-		$self -> log(info => "Candidate: $date");
-	}
+	$self -> check_date($id, $$line[$index], 'Date');
 
 	return $self -> tag_advance
 		(
@@ -3707,7 +3717,7 @@ Note: A string of length 1 - e.g. '0' - might still be an error.
 Default: 0.
 
 The upper lengths on strings are always as per L<the GEDCOM Specification Ged551-5.pdf|http://wiki.webtrees.net/File:Ged551-5.pdf>.
-See L</get_max_length($key, $line)> for details.
+See L</get_max_length($id, $line)> for details.
 
 String lengths out of range (as with all validation failures) are reported as log messages at level 'warning'.
 
@@ -3715,11 +3725,11 @@ String lengths out of range (as with all validation failures) are reported as lo
 
 =head1 Methods
 
-=head2 check_length($key, $line)
+=head2 check_length($id, $line)
 
 Checks the length of the data component (after the tag) on the given input $line.
 
-$key identifies what type of record the $line is expected to be.
+$id identifies what type of record the $line is expected to be.
 
 =head2 get_gedcom_from_file()
 
@@ -3737,19 +3747,19 @@ This is normally only used internally, but can be used to bypass reading from a 
 
 Note: If supplying data this way rather than via the file, you must strip newlines etc on every line, as well as leading and trailing blanks.
 
-=head2 get_max_length($key, $line)
+=head2 get_max_length($id, $line)
 
 Get the maximum string length of the data component (after the tag) on the given $line.
 
-$key identifies what type of record the $line is expected to be.
+$id identifies what type of record the $line is expected to be.
 
-=head2 get_min_length($key, $line)
+=head2 get_min_length($id, $line)
 
 Get the minimum string length of the data component (after the tag) on the given $line.
 
 Currently, this value is actually the value of strict(), i.e. 0 or 1.
 
-$key identifies what type of record the $line is expected to be.
+$id identifies what type of record the $line is expected to be.
 
 =head2 input_file([$gedcom_file_name])
 
