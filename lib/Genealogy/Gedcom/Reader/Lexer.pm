@@ -3,6 +3,8 @@ package Genealogy::Gedcom::Reader::Lexer;
 use strict;
 use warnings;
 
+use Genealogy::Gedcom::Reader::Lexer::Date;
+
 use Hash::FieldHash ':all';
 
 use Log::Handler;
@@ -33,11 +35,16 @@ sub check_length
 	my($length) = length($value);
 	my($min)    = $self -> get_min_length($key, $line);
 	my($max)    = $self -> get_max_length($key, $line);
+	my($result) = ( ($length < $min) || ($length > $max) ) ? 1 : 0;
 
-	if ( ($length < $min) || ($length > $max) )
+	if ($result)
 	{
 		$self -> log(warning => "Line: $$line[0]. Field: $key. Value: $value. Length: $length. Valid length range $min .. $max");
 	}
+
+	# Return 0 for success and 1 for failure.
+
+	return $result;
 
 } # End of check_length.
 
@@ -2713,8 +2720,17 @@ sub tag_publication_date
 	my($id) = 'publication_date';
 
 	$self -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][5]')");
-	$self -> check_length($id, $$line[$index]);
-	$self -> push_item($$line[$index], '');
+
+	if ($self -> check_length($id, $$line[$index]) )
+	{
+		$self -> push_item($$line[$index], 'Invalid date');
+	}
+	else
+	{
+		my($date) = Genealogy::Gedcom::Reader::Lexer::Date -> new(candidate => $$line[$index][4], logger => $self -> logger) -> parse;
+
+		$self -> log(info => "Candidate: $date");
+	}
 
 	return ++$index;
 
@@ -3458,8 +3474,17 @@ sub tag_transmission_date
 	my($id) = 'transmission_date';
 
 	$self -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][5]')");
-	$self -> check_length($id, $$line[$index]);
-	$self -> push_item($$line[$index], 'Header');
+
+	if ($self -> check_length($id, $$line[$index]) )
+	{
+		$self -> push_item($$line[$index], 'Invalid date');
+	}
+	else
+	{
+		my($date) = Genealogy::Gedcom::Reader::Lexer::Date -> new(candidate => $$line[$index][4], logger => $self -> logger) -> parse;
+
+		$self -> log(info => "Candidate: $date");
+	}
 
 	return $self -> tag_advance
 		(
@@ -3894,6 +3919,12 @@ Used for various cases.
 
 =item o Continue
 
+=item o Date
+
+If the type is 'Date', then it has been successfully parsed.
+
+If parsing failed, the value will be 'Invalid date'.
+
 =item o Event
 
 =item o Family
@@ -3903,6 +3934,12 @@ Used for various cases.
 =item o Header
 
 =item o Individual
+
+=item o Invalid date
+
+If the type is 'Date', then it has been successfully parsed.
+
+If parsing failed, the value will be 'Invalid date'.
 
 =item o Link to FAM
 

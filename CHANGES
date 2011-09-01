@@ -5,6 +5,9 @@ Revision history for Perl extension Genealogy::Gedcom.
 	  - Update UUID proposal with use case.
 	  - Rename UUID proposal from docs/uuid.txt to docs/uuid.proposal.pod, and add docs/uuid.proposal.html.
 	  - Remove obsolete docs/rationale.*.
+	  - Add date parsing to each date field with Genealogy::Gedcom::Reader::Lexer::Date.
+	  - In the array of hashrefs recording lex results, the type field can now be 'Date' or 'Invalid date'.
+	  	'Date' means is was successfully parsed, and 'Invalid date' means it could not be parsed.
 
 0.80  Mon Aug 29 12:00:00 2011
 	  - Initial release.
