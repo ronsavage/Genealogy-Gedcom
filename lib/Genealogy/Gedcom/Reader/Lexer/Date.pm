@@ -67,6 +67,9 @@ sub parse
 		(
 		 date   => '',
 		 escape => 'dgregorian',
+		 first  => '',
+		 infix  => '',
+		 last   => '',
 		 locale => $locale,
 		 phrase => '',
 		 prefix => '',
@@ -81,14 +84,15 @@ sub parse
 	return {%date} if (length($candidate) == 0);
 
 	# Phase 2: Handle leading word or abbreviation.
+	# Note: This hash deliberately includes words from ranges, as documentation.
 
 	my(%abbrev) =
 		(
-		 en => {abbrev (qw/about abt and after before between calculated estimated from  interpreted  to/)},
-		 nl => {abbrev (qw/rond      en  na    voor   tussen  calculated estimated vanaf finterpreted tot/)},
+		 en => {abbrev (qw/about abt and after before between calculated estimated from  interpreted to/)},
+		 nl => {abbrev (qw/rond      en  na    voor   tussen  calculated estimated vanaf interpreted tot/)},
 		);
 
-	my(@field)  = split(/\s+/, $candidate);
+	my(@field) = split(/\s+/, $candidate);
 
 	if ($abbrev{$locale}{$field[0]})
 	{
@@ -109,10 +113,36 @@ sub parse
 
 	# Phase 4: Check for date range.
 
+	my(%range_abbrev) =
+		(
+		 en => {abbrev (qw/and to/)},
+		 nl => {abbrev (qw/en  tot/)},
+		);
+
 	my($range) = 0;
 
-	for my $field (@field)
+	my($offset);
+
+	for my $i (0 .. $#field)
 	{
+		$field = $field[$i];
+
+		if ($range_abbrev{$locale}{$field})
+		{
+			$data{$locale}{infix} = $range_abbrev{$locale}{$field};
+			$offset               = $i;
+		}
+	}
+
+	# Did we find a range '... and ...' or '... to ...'?
+ 
+	if (defined $offset)
+	{
+		# Expect d-m-y and/to d-m-y.
+	}
+	else
+	{
+		# Expect d-m-y at most.
 	}
 
 	$date{date} = join(' ', @field);
@@ -193,7 +223,9 @@ Default: 1900.
 
 =item o locale => $a_locale
 
-A string which specifies the desired locale. Only 'en' is supported.
+A string which specifies the desired locale.
+
+Only 'en' is supported. However, faint traces of 'nl' (Dutch) are present in the source code (but not in t/date.t).
 
 Default: 'en'.
 
@@ -256,6 +288,24 @@ The return value is a hashref with these key => value pairs:
 =item o escape => $the_escape_string
 
 Default: 'dgregorian' (yes, lower case).
+
+=item o first => $first_date_in_range
+
+This is for cases like '1999' in 'Between 1999 and 2000', and '2002' in 'From 2001 to 2002'.
+
+Default: ''.
+
+=item o infix => $a_string
+
+This is for cases like 'and' in 'Between 1999 and 2000', and 'to' in 'From 2001 to 2002'.
+
+Default: ''.
+
+=item o last => $last_date_in_range
+
+This is for cases like '2000' in 'Between 1999 and 2000', and '2002' in 'From 2001 to 2002'.
+
+Default: ''.
 
 =item o locale => $the_user_supplied_locale
 

@@ -20,6 +20,10 @@ en =>
 		{
 		date   => '',
 		escape => 'dgregorian',
+		first  => '',
+		infix  => '',
+		last   => '',
+		locale => 'en',
 		phrase => lc 'Unknown date',
 		prefix => '',
 		},
@@ -27,6 +31,10 @@ en =>
 		{
 		date   => '1999',
 		escape => 'dgregorian',
+		first  => '',
+		infix  => '',
+		last   => '',
+		locale => 'en',
 		phrase => lc 'Unsure of date',
 		prefix => lc 'About',
 		},
@@ -34,6 +42,10 @@ en =>
 		{
 		date   => lc '1 Jan 2000',
 		escape => lc 'DGREGORIAN',
+		first  => '',
+		infix  => '',
+		last   => '',
+		locale => 'en',
 		phrase => '',
 		prefix => '',
 		},
@@ -41,6 +53,10 @@ en =>
 		{
 		date   => lc '1 Jan 2001 to 2 Feb 2002',
 		escape => 'dgregorian',
+		first  => '',
+		infix  => '',
+		last   => '',
+		locale => 'en',
 		phrase => '',
 		prefix => lc 'From',
 		},
@@ -48,6 +64,10 @@ en =>
 		{
 		date   => lc '3 Mar 2003',
 		escape => 'dgregorian',
+		first  => '',
+		infix  => '',
+		last   => '',
+		locale => 'en',
 		phrase => '',
 		prefix => lc 'Before',
 		},
@@ -55,6 +75,10 @@ en =>
 		{
 		date   => lc '4 Apr 2004 and 5 May 2005',
 		escape => 'dgregorian',
+		first  => '',
+		infix  => '',
+		last   => '',
+		locale => 'en',
 		phrase => '',
 		prefix => lc 'Between',
 		},
@@ -72,6 +96,8 @@ for my $candidate (keys %{$candidate{$locale} })
 		$out_string = join(', ', map{"$_ => '$$date{$_}'"} sort keys %$date);
 
 		ok($in_string eq $out_string, "Testing: $candidate");
+		#diag "In:  $in_string.";
+		#diag "Out: $out_string";
 }
 
 done_testing;
