@@ -58,15 +58,18 @@ sub parse
 {
 	my($self, %arg) = @_;
 	my($candidate)  = lc ($arg{candidate} || $self -> candidate);
+	$candidate      =~ s/^\s+//; # Just in case...
+	$candidate      =~ s/\s+$//;
 	my($century)    = $arg{century}       || $self -> century;
 	my($locale)     = $arg{locale}        || $self -> locale;
 
-	die 'No value supplied for candidate' if (! $candidate);
+	die 'No value supplied for candidate date' if (length($candidate) == 0);
 
-	# Phase 1: Handle interpreted case (/...(...)/).
+	# Phase 1: Handle interpreted case, i.e. /...(...)/.
 
 	my(%date) =
 		(
+		 bc              => 0,
 		 escape          => 'dgregorian',
 		 first           => '',
 		 first_ambiguous => 0,
@@ -78,16 +81,17 @@ sub parse
 		 prefix          => '',
 		);
 
-	if ($candidate =~ /^(.*)\((.+)\)/)
+	if ($candidate =~ /^(.*)\((.*)\)/)
 	{
 		$candidate    = $1 || '';
-		$date{phrase} = $2;
+		$date{phrase} = $2 || ''; # Allow for '... ()'.
 	}
 
 	return {%date} if (length($candidate) == 0);
 
 	# Phase 2: Handle leading word or abbreviation.
-	# Note: This hash deliberately includes words from ranges, as documentation.
+	# Note: This hash deliberately includes words from ranges, as documentation,
+	# even though ranges are checked separately below.
 
 	my(%abbrev) =
 		(
@@ -140,16 +144,16 @@ sub parse
  
 	if (defined $offset)
 	{
-		# Expect 'd m y' and/to 'd m y', possibly with abbreviations.
+		# Expect 'd m y' 'and/to' 'd m y'.
 
-		$self -> parse_date(@field[0 .. ($offset - 1)]);
-		$self -> parse_date(@field[($offset + 1) .. $#field]);
+		$self -> parse_date(\%date, $locale, $century, @field[0 .. ($offset - 1)]);
+		$self -> parse_date(\%date, $locale, $century, @field[($offset + 1) .. $#field]);
 	}
 	else
 	{
 		# Expect 'd m y', possibly with abbreviations.
 
-		$self -> parse_date(@field);
+		$self -> parse_date(\%date, $locale, $century, @field);
 	}
 
 	return {%date};
@@ -160,9 +164,25 @@ sub parse
 
 sub parse_date
 {
-	my($self, @field) = @_;
+	my($self, $date, $locale, $century, @field) = @_;
 
 	print 'Working with: ', join(', ', @field), ". \n";
+
+	# Phase 1: Handle '500B.C.' or similar, including '500 BC'.
+
+	if ( ($#field == 1) && ($field[1] =~ /b\.?c\.?/) )
+	{
+		@field = "$field[0]bc";
+	}
+
+	if ( ($#field == 0) && ($field[0] =~ /(.+)b\.?c\.?$/) )
+	{
+		$$date{bc}    = 1;
+		$$date{first} = $1;
+
+		return;
+	}
+
 
 } # End of parse_date.
 

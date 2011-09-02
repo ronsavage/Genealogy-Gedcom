@@ -18,7 +18,8 @@ en =>
 {
 		'@#DGREGORIAN@ 1 Jan 2000' =>
 		{
-		escape          => lc 'DGREGORIAN',
+		bc              => 0,
+		escape          => 'dgregorian',
 		first           => '',
 		first_ambiguous => 0,
 		infix           => '',
@@ -30,6 +31,7 @@ en =>
 		},
 		'(Unknown date)' =>
 		{
+		bc              => 0,
 		escape          => 'dgregorian',
 		first           => '',
 		first_ambiguous => 0,
@@ -37,11 +39,12 @@ en =>
 		last            => '',
 		last_ambiguous  => 0,
 		locale          => 'en',
-		phrase          => lc 'Unknown date',
+		phrase          => 'unknown date',
 		prefix          => '',
 		},
 		'Abt 1999 (Unsure of date)' =>
 		{
+		bc              => 0,
 		escape          => 'dgregorian',
 		first           => '',
 		first_ambiguous => 0,
@@ -49,11 +52,12 @@ en =>
 		last            => '',
 		last_ambiguous  => 0,
 		locale          => 'en',
-		phrase          => lc 'Unsure of date',
-		prefix          => lc 'About',
+		phrase          => 'unsure of date',
+		prefix          => 'about',
 		},
 		'Bef 3 Mar 2003' =>
 		{
+		bc              => 0,
 		escape          => 'dgregorian',
 		first           => '',
 		first_ambiguous => 0,
@@ -62,10 +66,11 @@ en =>
 		last_ambiguous  => 0,
 		locale          => 'en',
 		phrase          => '',
-		prefix          => lc 'Before',
+		prefix          => 'before',
 		},
 		'Bet 4 Apr 2004 and 5 May 2005' =>
 		{
+		bc              => 0,
 		escape          => 'dgregorian',
 		first           => '',
 		first_ambiguous => 0,
@@ -74,10 +79,11 @@ en =>
 		last_ambiguous  => 0,
 		locale          => 'en',
 		phrase          => '',
-		prefix          => lc 'Between',
+		prefix          => 'between',
 		},
 		'From 1 Jan 2001 to 2 Feb 2002' =>
 		{
+		bc              => 0,
 		escape          => 'dgregorian',
 		first           => '',
 		first_ambiguous => 0,
@@ -86,7 +92,59 @@ en =>
 		last_ambiguous  => 0,
 		locale          => 'en',
 		phrase          => '',
-		prefix          => lc 'From',
+		prefix          => 'from',
+		},
+		'500B.C.' =>
+		{
+		bc              => 1,
+		escape          => 'dgregorian',
+		first           => '500',
+		first_ambiguous => 0,
+		infix           => '',
+		last            => '',
+		last_ambiguous  => 0,
+		locale          => 'en',
+		phrase          => '',
+		prefix          => '',
+		},
+		'500BC.' =>
+		{
+		bc              => 1,
+		escape          => 'dgregorian',
+		first           => '500',
+		first_ambiguous => 0,
+		infix           => '',
+		last            => '',
+		last_ambiguous  => 0,
+		locale          => 'en',
+		phrase          => '',
+		prefix          => '',
+		},
+		'500BC' =>
+		{
+		bc              => 1,
+		escape          => 'dgregorian',
+		first           => '500',
+		first_ambiguous => 0,
+		infix           => '',
+		last            => '',
+		last_ambiguous  => 0,
+		locale          => 'en',
+		phrase          => '',
+		prefix          => '',
+		},
+		'500 BC' =>
+		{
+		bc              => 1,
+		escape          => 'dgregorian',
+		first           => '500',
+		first_ambiguous => 0,
+		infix           => '',
+		last            => '',
+		last_ambiguous  => 0,
+		locale          => 'en',
+		phrase          => '',
+		prefix          => '',
 		},
 }
 );
