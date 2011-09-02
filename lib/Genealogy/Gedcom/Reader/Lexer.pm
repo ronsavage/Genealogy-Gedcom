@@ -4029,6 +4029,12 @@ Details:
 
 Xrefs (pointers) are checked that they point to an xref which exists. Each dangling xref is only reported once.
 
+=item o Dates are validated
+
+L<Genealogy::Gedcom::Reader::Lexer::Date>.parse() returns a hashref with the 'error' key pointing to either 0 for no error or 1 for an error.
+
+In the case of a date range, either the first or second date being in error can set this flag.
+
 =item o Duplicate xrefs
 
 Xrefs which are (potentially) pointed to are checked for uniqueness.
@@ -4062,8 +4068,6 @@ All validation failures are reported as log messages at level 'warning'.
 Here are some suggestions from L<the mailing list|The Gedcom Mailing List>:
 
 =over 4
-
-=item o Date checks and more date checks
 
 =item o Mandatory sub-tags
 

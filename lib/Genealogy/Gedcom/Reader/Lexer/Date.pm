@@ -70,6 +70,7 @@ sub parse
 	my(%date) =
 		(
 		 bc              => 0,
+		 error           => 0,
 		 escape          => 'dgregorian',
 		 first           => '',
 		 first_ambiguous => 0,
@@ -178,11 +179,20 @@ sub parse_date
 	if ( ($#field == 0) && ($field[0] =~ /(.+)b\.?c\.?$/) )
 	{
 		$$date{bc}    = 1;
-		$$date{first} = $1;
+		$$date{first} = "$1-01-01";
 
 		return;
 	}
 
+	# Phase 2: Handle an isolated year.
+
+	if ( ($#field == 0) && ($field[0] =~ /^(\d+)$/) )
+	{
+		$$date{first}           = "$1-01-01";
+		$$date{first_ambiguous} = 1;
+
+		return;
+	}
 
 } # End of parse_date.
 
@@ -344,15 +354,41 @@ The return value is a hashref with these key => value pairs:
 
 =over 4
 
+=item o ambiguous => $Boolean
+
+Returns 1 if the date is ambiguous.
+
+This includes a year by itself, since the month and day are ambiguous.
+
+Default: 0.
+
+=item o bc => $Boolean
+
+Returns 1 if the date contains one of: 'B.C.', 'BC.' or 'BC'.
+
+In the input, this suffix can be separated from the year by spaces.
+
+Default: 0.
+
+=item o error => $Boolean
+
+Returns 1 if the date is invalid.
+
+Default: 0.
+
 =item o escape => $the_escape_string
 
 Default: 'dgregorian' (yes, lower case).
 
 =item o first => $first_date_in_range
 
-Returns the first (or only) date.
+Returns the first (or only) date, as 'yyyy-mm-dd' (all digits).
 
 This is for cases like '1999' in 'about 1999', and for '1999' in 'Between 1999 and 2000', and '2001' in 'From 2001 to 2002'.
+
+A missing month is returned as 01. A missing day is returned as 01.
+
+'500BC' will be returned as '500-01-01', with the 'bc' flag set.
 
 Default: ''.
 
@@ -370,7 +406,11 @@ Default: ''.
 
 =item o last => $last_date_in_range
 
+Returns the second of 2 dates, as 'yyyy-mm-dd' (all digits).
+
 This is for cases like '2000' in 'Between 1999 and 2000', and '2002' in 'From 2001 to 2002'.
+
+A missing month is returned as 01. A missing day is returned as 01.
 
 Default: ''.
 

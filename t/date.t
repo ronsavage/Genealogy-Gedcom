@@ -19,6 +19,7 @@ en =>
 		'@#DGREGORIAN@ 1 Jan 2000' =>
 		{
 		bc              => 0,
+		error           => 0,
 		escape          => 'dgregorian',
 		first           => '',
 		first_ambiguous => 0,
@@ -32,6 +33,7 @@ en =>
 		'(Unknown date)' =>
 		{
 		bc              => 0,
+		error           => 0,
 		escape          => 'dgregorian',
 		first           => '',
 		first_ambiguous => 0,
@@ -45,9 +47,10 @@ en =>
 		'Abt 1999 (Unsure of date)' =>
 		{
 		bc              => 0,
+		error           => 0,
 		escape          => 'dgregorian',
-		first           => '',
-		first_ambiguous => 0,
+		first           => '1999-01-01',
+		first_ambiguous => 1,
 		infix           => '',
 		last            => '',
 		last_ambiguous  => 0,
@@ -58,6 +61,7 @@ en =>
 		'Bef 3 Mar 2003' =>
 		{
 		bc              => 0,
+		error           => 0,
 		escape          => 'dgregorian',
 		first           => '',
 		first_ambiguous => 0,
@@ -71,6 +75,7 @@ en =>
 		'Bet 4 Apr 2004 and 5 May 2005' =>
 		{
 		bc              => 0,
+		error           => 0,
 		escape          => 'dgregorian',
 		first           => '',
 		first_ambiguous => 0,
@@ -84,6 +89,7 @@ en =>
 		'From 1 Jan 2001 to 2 Feb 2002' =>
 		{
 		bc              => 0,
+		error           => 0,
 		escape          => 'dgregorian',
 		first           => '',
 		first_ambiguous => 0,
@@ -97,8 +103,9 @@ en =>
 		'500B.C.' =>
 		{
 		bc              => 1,
+		error           => 0,
 		escape          => 'dgregorian',
-		first           => '500',
+		first           => '500-01-01',
 		first_ambiguous => 0,
 		infix           => '',
 		last            => '',
@@ -110,8 +117,9 @@ en =>
 		'500BC.' =>
 		{
 		bc              => 1,
+		error           => 0,
 		escape          => 'dgregorian',
-		first           => '500',
+		first           => '500-01-01',
 		first_ambiguous => 0,
 		infix           => '',
 		last            => '',
@@ -123,8 +131,9 @@ en =>
 		'500BC' =>
 		{
 		bc              => 1,
+		error           => 0,
 		escape          => 'dgregorian',
-		first           => '500',
+		first           => '500-01-01',
 		first_ambiguous => 0,
 		infix           => '',
 		last            => '',
@@ -136,9 +145,24 @@ en =>
 		'500 BC' =>
 		{
 		bc              => 1,
+		error           => 0,
 		escape          => 'dgregorian',
-		first           => '500',
+		first           => '500-01-01',
 		first_ambiguous => 0,
+		infix           => '',
+		last            => '',
+		last_ambiguous  => 0,
+		locale          => 'en',
+		phrase          => '',
+		prefix          => '',
+		},
+		'2011' =>
+		{
+		bc              => 0,
+		error           => 0,
+		escape          => 'dgregorian',
+		first           => '2011-01-01',
+		first_ambiguous => 1,
 		infix           => '',
 		last            => '',
 		last_ambiguous  => 0,
@@ -155,7 +179,7 @@ my($out_string);
 
 for my $candidate (sort keys %{$candidate{$locale} })
 {
-		diag "Testing: $candidate";
+		diag "Testing $candidate";
 
 		$date       = $parser -> parse(candidate => $candidate);
 		$in_string  = join(', ', map{"$_ => '$candidate{$locale}{$candidate}{$_}'"} sort keys %{$candidate{$locale}{$candidate} });
