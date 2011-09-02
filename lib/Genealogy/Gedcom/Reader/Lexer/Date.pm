@@ -58,6 +58,7 @@ sub parse
 {
 	my($self, %arg) = @_;
 	my($candidate)  = lc ($arg{candidate} || $self -> candidate);
+	my($century)    = $arg{century}       || $self -> century;
 	my($locale)     = $arg{locale}        || $self -> locale;
 
 	die 'No value supplied for candidate' if (! $candidate);
@@ -140,15 +141,30 @@ sub parse
 	if (defined $offset)
 	{
 		# Expect 'd m y' and/to 'd m y', possibly with abbreviations.
+
+		$self -> parse_date(@field[0 .. ($offset - 1)]);
+		$self -> parse_date(@field[($offset + 1) .. $#field]);
 	}
 	else
 	{
 		# Expect 'd m y', possibly with abbreviations.
+
+		$self -> parse_date(@field);
 	}
 
 	return {%date};
 
 } # End of parse.
+
+# --------------------------------------------------
+
+sub parse_date
+{
+	my($self, @field) = @_;
+
+	print 'Working with: ', join(', ', @field), ". \n";
+
+} # End of parse_date.
 
 # --------------------------------------------------
 
@@ -254,7 +270,7 @@ The [] indicate an optional parameter.
 
 Get or set the string being parsed.
 
-=head2 default_century([$an_integer])
+=head2 century([$an_integer])
 
 The [] indicate an optional parameter.
 
@@ -286,13 +302,19 @@ Here, the [] indicate an optional parameter.
 
 Parse the candidate and return a hashref.
 
-$arg{candidate} => $candiate takes precedence over new(candidate => $candidate).
+$arg{candidate}: The candidate date can be passed in to new as new(candidate => $a_string), or into parse as parse(candidate => $a_string).
 
-The string which is a candidate date can be passed in to new as new(candidate => $a_string), or into parse as parse(candidate => $a_string).
+$arg{candidate} => $candidate takes precedence over new(candidate => $candidate).
 
-This string is always converted to lower case before being processed. Hence all result data is lower case.
+This string is always converted to lower case before being processed.
 
-The string which is a locale can be passed in to new as new(locale => $a_string), or into parse as parse(locale => $a_string).
+In fact I<all> result data is lower case.
+
+$arg{century}: The century can be passed in to new as new(century => $a_number), or into parse as parse(century => $a_number).
+
+$arg{century} => $a_number takes precedence over new(century => $number).
+
+$arg{locale}: The locale can be passed in to new as new(locale => $a_string), or into parse as parse(locale => $a_string).
 
 $arg{locale} => $locale takes precedence over new(locale => $locale).
 
@@ -310,7 +332,7 @@ Default: 'dgregorian' (yes, lower case).
 
 Returns the first (or only) date.
 
-This is for cases like '1999' in 'about 1999', and for '1999' in 'Between 1999 and 2000', and '2002' in 'From 2001 to 2002'.
+This is for cases like '1999' in 'about 1999', and for '1999' in 'Between 1999 and 2000', and '2001' in 'From 2001 to 2002'.
 
 Default: ''.
 
@@ -344,7 +366,7 @@ Default: The locale supplied to new() or to parse().
 
 =item o phrase => $the_phrase
 
-This is for cases like '(Unsure about the date)' or the part within () in '1999 (Approx)'.
+This is for cases like '(Unsure about the date)' or 'Approx' in '1999 (Approx)'.
 
 The () are discarded.
 

@@ -97,6 +97,8 @@ my($out_string);
 
 for my $candidate (sort keys %{$candidate{$locale} })
 {
+		diag "Testing: $candidate";
+
 		$date       = $parser -> parse(candidate => $candidate);
 		$in_string  = join(', ', map{"$_ => '$candidate{$locale}{$candidate}{$_}'"} sort keys %{$candidate{$locale}{$candidate} });
 		$out_string = join(', ', map{"$_ => '$$date{$_}'"} sort keys %$date);
