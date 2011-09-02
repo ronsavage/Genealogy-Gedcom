@@ -8,7 +8,8 @@ use Hash::FieldHash ':all';
 use Text::Abbrev; # For abbrev.
 
 fieldhash my %candidate => 'candidate';
-fieldhash my %counter   => 'counter';
+fieldhash my %century   => 'century';
+fieldhash my %locale    => 'locale';
 fieldhash my %logger    => 'logger';
 
 our $VERSION = '0.80';
@@ -18,8 +19,8 @@ our $VERSION = '0.80';
 sub _init
 {
 	my($self, $arg)  = @_;
-	$$arg{candidate} = $$arg{candidate} || '';
-	$$arg{counter}   = 0;
+	$$arg{candidate} = $$arg{candidate} || '';   # Caller can set.
+	$$arg{locale}    = $$arg{locale}    || 'en'; # Caller can set.
 	my($user_logger) = defined($$arg{logger}); # Caller can set (e.g. to '').
 	$$arg{logger}    = $user_logger ? $$arg{logger} : Log::Handler -> new;
 	$self            = from_hash($self, $arg);
@@ -56,15 +57,17 @@ sub parse
 {
 	my($self, %arg) = @_;
 	my($candidate)  = lc ($arg{candidate} || $self -> candidate);
+	my($locale)     = $arg{locale}        || $self -> locale;
 
 	die 'No value supplied for candidate' if (! $candidate);
 
-	# Phase 1: Handle case of /...(...)/.
+	# Phase 1: Handle interpreted case (/...(...)/).
 
 	my(%date) =
 		(
 		 date   => '',
 		 escape => 'dgregorian',
+		 locale => $locale,
 		 phrase => '',
 		 prefix => '',
 		);
@@ -79,13 +82,18 @@ sub parse
 
 	# Phase 2: Handle leading word or abbreviation.
 
-	my(%abbrev) = abbrev (qw/about abt after before between calculated estimated from interpreted to/);
+	my(%abbrev) =
+		(
+		 en => {abbrev (qw/about abt and after before between calculated estimated from  interpreted  to/)},
+		 nl => {abbrev (qw/rond      en  na    voor   tussen  calculated estimated vanaf finterpreted tot/)},
+		);
+
 	my(@field)  = split(/\s+/, $candidate);
 
-	if ($abbrev{$field[0]})
+	if ($abbrev{$locale}{$field[0]})
 	{
-		$date{prefix} = $abbrev{$field[0]};
-		$date{prefix} = 'about' if ($date{prefix} eq 'abt');
+		$date{prefix} = $abbrev{$locale}{$field[0]};
+		$date{prefix} = 'about' if ($date{prefix} eq 'abt'); # Sigh.
 
 		shift @field;
 	}
@@ -97,6 +105,14 @@ sub parse
 		$date{escape} = $1;
 
 		shift @field;
+	}
+
+	# Phase 4: Check for date range.
+
+	my($range) = 0;
+
+	for my $field (@field)
+	{
 	}
 
 	$date{date} = join(' ', @field);
@@ -167,13 +183,19 @@ A string which the code tries to parse as a GEDCOM date of some sort.
 
 Default: ''.
 
-=item o default_century => $an_integer
+=item o century => $an_integer
 
 An integer which specifies what to do with 2 digit dates.
 
 This means '29 Feb 00', with the default century of 1900, is interpreted as 29-02-1900.
 
 Default: 1900.
+
+=item o locale => $a_locale
+
+A string which specifies the desired locale. Only 'en' is supported.
+
+Default: 'en'.
 
 =item o logger => $logger_object
 
@@ -203,6 +225,14 @@ Get or set the value of the default century.
 
 Calls $self -> logger -> $level($s).
 
+=head2 locale([$locale])
+
+Here, the [] indicate an optional parameter.
+
+Get or set the locale.
+
+Only 'en' is supported.
+
 =head2 logger([$logger_object])
 
 Here, the [] indicate an optional parameter.
@@ -226,6 +256,10 @@ The return value is a hashref with these key => value pairs:
 =item o escape => $the_escape_string
 
 Default: 'dgregorian' (yes, lower case).
+
+=item o locale => $the_user_supplied_locale
+
+Default: The locale supplied to new() or to parse().
 
 =item o phrase => $the_phrase
 

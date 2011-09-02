@@ -5,7 +5,8 @@ use Test::More;
 
 BEGIN {use_ok('Genealogy::Gedcom::Reader::Lexer::Date');}
 
-my($parser) = Genealogy::Gedcom::Reader::Lexer::Date -> new(logger => '');
+my($locale) = 'en';
+my($parser) = Genealogy::Gedcom::Reader::Lexer::Date -> new(locale => $locale, logger => '');
 
 isa_ok($parser, 'Genealogy::Gedcom::Reader::Lexer::Date');
 
@@ -13,6 +14,8 @@ isa_ok($parser, 'Genealogy::Gedcom::Reader::Lexer::Date');
 
 my(%candidate) =
 (
+en =>
+{
 		'(Unknown date)' =>
 		{
 		date   => '',
@@ -55,16 +58,17 @@ my(%candidate) =
 		phrase => '',
 		prefix => lc 'Between',
 		},
+}
 );
 
 my($date);
 my($in_string);
 my($out_string);
 
-for my $candidate (keys %candidate)
+for my $candidate (keys %{$candidate{$locale} })
 {
 		$date       = $parser -> parse(candidate => $candidate);
-		$in_string  = join(', ', map{"$_ => '$candidate{$candidate}{$_}'"} sort keys %{$candidate{$candidate} });
+		$in_string  = join(', ', map{"$_ => '$candidate{$locale}{$candidate}{$_}'"} sort keys %{$candidate{$locale}{$candidate} });
 		$out_string = join(', ', map{"$_ => '$$date{$_}'"} sort keys %$date);
 
 		ok($in_string eq $out_string, "Testing: $candidate");
