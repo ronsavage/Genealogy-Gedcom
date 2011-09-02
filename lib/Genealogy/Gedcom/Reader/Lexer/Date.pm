@@ -119,8 +119,7 @@ sub parse
 		 nl => {abbrev (qw/en  tot/)},
 		);
 
-	my($range) = 0;
-
+	my($field);
 	my($offset);
 
 	for my $i (0 .. $#field)
@@ -129,8 +128,8 @@ sub parse
 
 		if ($range_abbrev{$locale}{$field})
 		{
-			$data{$locale}{infix} = $range_abbrev{$locale}{$field};
-			$offset               = $i;
+			$date{infix} = $range_abbrev{$locale}{$field};
+			$offset      = $i;
 		}
 	}
 
@@ -138,11 +137,11 @@ sub parse
  
 	if (defined $offset)
 	{
-		# Expect d-m-y and/to d-m-y.
+		# Expect 'd m y' and/to 'd m y', possibly with abbreviations.
 	}
 	else
 	{
-		# Expect d-m-y at most.
+		# Expect 'd m y', possibly with abbreviations.
 	}
 
 	$date{date} = join(' ', @field);
