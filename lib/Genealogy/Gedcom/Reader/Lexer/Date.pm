@@ -18,7 +18,7 @@ our $VERSION = '0.80';
 sub _init
 {
 	my($self, $arg)  = @_;
-	$$arg{candidate} = $$arg{candidate} || die 'Error: No value supplied for candidate';
+	$$arg{candidate} = $$arg{candidate} || '';
 	$$arg{counter}   = 0;
 	my($user_logger) = defined($$arg{logger}); # Caller can set (e.g. to '').
 	$$arg{logger}    = $user_logger ? $$arg{logger} : Log::Handler -> new;
@@ -59,11 +59,49 @@ sub parse
 
 	die 'No value supplied for candidate' if (! $candidate);
 
-	my(%abbrev) = abbrev (qw/about after before between calculated estimated from interpreted to/);
-	my(@field)  = split(/\s+/, $candidate);
-	$field[0]   = $abbrev{$field[0]} ? $abbrev{$field[0]} : $field[0];
+	# Phase 1: Handle case of /...(...)/.
 
-	return $candidate;
+	my(%date) =
+		(
+		 date   => '',
+		 escape => 'dgregorian',
+		 phrase => '',
+		 prefix => '',
+		);
+
+	if ($candidate =~ /^(.*)\((.+)\)/)
+	{
+		$candidate    = $1 || '';
+		$date{phrase} = $2;
+	}
+
+	return {%date} if (length($candidate) == 0);
+
+	# Phase 2: Handle leading word or abbreviation.
+
+	my(%abbrev) = abbrev (qw/about abt after before between calculated estimated from interpreted to/);
+	my(@field)  = split(/\s+/, $candidate);
+
+	if ($abbrev{$field[0]})
+	{
+		$date{prefix} = $abbrev{$field[0]};
+		$date{prefix} = 'about' if ($date{prefix} eq 'abt');
+
+		shift @field;
+	}
+
+	# Phase 3: Handle date escape.
+
+	if ($field[0] =~ /@#(.+)@/)
+	{
+		$date{escape} = $1;
+
+		shift @field;
+	}
+
+	$date{date} = join(' ', @field);
+
+	return {%date};
 
 } # End of parse.
 
@@ -172,6 +210,40 @@ Here, the [] indicate an optional parameter.
 Get or set the logger object.
 
 To disable logging, just set logger to the empty string.
+
+Here, the [] indicate an optional parameter.
+
+The string which is a candidate date can be passed in to new as new(candidate => $a_string), or into parse as parse(candidate => $a_string).
+
+This string is always converted to lower case before being processed. Hence all result data is lower case.
+
+The return value is a hashref with these key => value pairs:
+
+=over 4
+
+=item o date => $the_date
+
+=item o escape => $the_escape_string
+
+Default: 'dgregorian' (yes, lower case).
+
+=item o phrase => $the_phrase
+
+This is for cases like '(Unsure about the date)' or the part within () in '1999 (Approx)'.
+
+The () are discarded.
+
+Default: ''.
+
+=item o prefix => $the_prefix
+
+This is for cases like 'about' in 'About 1999'.
+
+Default: ''.
+
+=back
+
+=head2 parse([%arg])
 
 =head1 FAQ
 

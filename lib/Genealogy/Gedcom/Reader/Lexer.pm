@@ -3725,11 +3725,29 @@ String lengths out of range (as with all validation failures) are reported as lo
 
 =head1 Methods
 
-=head2 check_length($id, $line)
+=head2 check_date($id, $line, $type)
 
-Checks the length of the data component (after the tag) on the given input $line.
+Checks the date field in the input arrayref $line, $$line[4].
 
 $id identifies what type of record the $line is expected to be.
+
+$type affects the hashref output from parsing this input file.
+
+$type is assigned to the output 'type' field if it is parsed successfully. If not, 'type' is set to 'Invalid date'.
+
+$type will normally have a value such as 'Date' or 'Family'.
+
+=head2 check_length($id, $line)
+
+Checks the length of the data component (after the tag) on the input arrayref $line, $$line[4].
+
+$id identifies what type of record the $line is expected to be.
+
+=head2 cross_check_xrefs
+
+Ensure that all xrefs point to existing records.
+
+See L<FAQ/What validation is performed?> for details.
 
 =head2 get_gedcom_from_file()
 
@@ -3806,6 +3824,12 @@ This option is only used if the lexer creates an object of type L<Log::Handler>.
 Pushes a hashref of components of the $line, with type $type, onto the arrayref of items returned by L</items()>.
 
 See the L</FAQ> for details.
+
+=head2 renumber_items()
+
+Scan the arrayref of hashrefs returned by items() and ensure the 'count' field is ok.
+
+This is done in case array elements have been combined, e.g. when processing CONCs and CONTs for NOTEs.
 
 =head2 report()
 
