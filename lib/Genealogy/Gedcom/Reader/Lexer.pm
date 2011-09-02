@@ -30,7 +30,7 @@ our $VERSION = '0.80';
 
 sub check_date
 {
-	my($self, $id, $line, $type) = @_;
+	my($self, $id, $line) = @_;
 
 	if ($self -> check_length($id, $line) )
 	{
@@ -41,10 +41,11 @@ sub check_date
 		my($date) = Genealogy::Gedcom::Reader::Lexer::Date -> new(candidate => $$line[4], logger => $self -> logger) -> parse;
 
 		$self -> log(info => "Candidate: $date");
-		$self -> push_item($line, $type);
+		$self -> push_item($line, 'Date');
 	}
 
 } # End of check_date.
+
 # --------------------------------------------------
 
 sub check_length
@@ -956,7 +957,7 @@ sub tag_change_date
 	my($id) = 'change_date';
 
 	$self -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][5]')");
-	$self -> check_date($id, $$line[$index], '');
+	$self -> check_date($id, $$line[$index]);
 
 	return $self -> tag_advance
 		(
@@ -1165,7 +1166,7 @@ sub tag_date_lds_ord
 	my($id) = 'date_lds_ord';
 
 	$self -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][5]')");
-	$self -> check_date($id, $$line[$index], 'Family');
+	$self -> check_date($id, $$line[$index]);
 
 	return ++$index;
 
@@ -1194,7 +1195,7 @@ sub tag_date_value
 	my($id) = 'date_value';
 
 	$self -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][5]')");
-	$self -> check_date($id, $$line[$index], '');
+	$self -> check_date($id, $$line[$index]);
 
 	return ++$index;
 
@@ -1250,7 +1251,7 @@ sub tag_entry_recording_date
 	my($id) = 'entry_recording_date';
 
 	$self -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][5]')");
-	$self -> check_date($id, $$line[$index], 'Source');
+	$self -> check_date($id, $$line[$index]);
 
 	return ++$index;
 
@@ -1810,7 +1811,7 @@ sub tag_lds_spouse_sealing
 	my($id) = 'lds_spouse_sealing';
 
 	$self -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][5]')");
-	$self -> check_date($id, $$line[$index], 'Family');
+	$self -> check_date($id, $$line[$index]);
 
 	return $self -> tag_advance
 		(
@@ -2750,7 +2751,7 @@ sub tag_publication_date
 	my($id) = 'publication_date';
 
 	$self -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][5]')");
-	$self -> check_date($id, $$line[$index], 'Date');
+	$self -> check_date($id, $$line[$index]);
 
 	return ++$index;
 
@@ -3494,7 +3495,7 @@ sub tag_transmission_date
 	my($id) = 'transmission_date';
 
 	$self -> log(debug => "tag_$id($$line[$index][0], '$$line[$index][5]')");
-	$self -> check_date($id, $$line[$index], 'Date');
+	$self -> check_date($id, $$line[$index]);
 
 	return $self -> tag_advance
 		(
@@ -3725,17 +3726,11 @@ String lengths out of range (as with all validation failures) are reported as lo
 
 =head1 Methods
 
-=head2 check_date($id, $line, $type)
+=head2 check_date($id, $line)
 
 Checks the date field in the input arrayref $line, $$line[4].
 
 $id identifies what type of record the $line is expected to be.
-
-$type affects the hashref output from parsing this input file.
-
-$type is assigned to the output 'type' field if it is parsed successfully. If not, 'type' is set to 'Invalid date'.
-
-$type will normally have a value such as 'Date' or 'Family'.
 
 =head2 check_length($id, $line)
 

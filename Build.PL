@@ -17,7 +17,6 @@ Module::Build -> new
  },
  requires =>
  {
-	 Date::Simple    => 3.03,
 	 Getopt::Long    => 2.38,
 	 Hash::FieldHash => 0.10,
 	 Log::Handler    => 0.71,

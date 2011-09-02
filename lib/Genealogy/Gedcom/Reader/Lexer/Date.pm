@@ -442,6 +442,16 @@ Default: ''.
 
 =head1 FAQ
 
+=head2 When will you use L<DateTime::Locale> as L<Gedcom::Date> does?
+
+One day.
+
+=head2 Why are dates returned as string and not objects of (say) Date::Simple?
+
+Because L<Date::Simple> only accepts 4 digits years, and we might get '500BC'.
+
+And yes, I know, many other date modules are available. See L<http://datetime.perl.org/wiki/datetime/dashboard> for details.
+
 =head1 Machine-Readable Change Log
 
 The file CHANGES was converted into Changelog.ini by L<Module::Metadata::Changes>.
