@@ -187,6 +187,10 @@ See L<Genealogy::Gedcom::Reader::Lexer> for details.
 
 =back
 
+=head2 Why did you choose L<Hash::FieldHash> over L<Moose>?
+
+My policy is to use the light-weight L<Hash::FieldHash> for stand-alone modules and L<Moose> for applications.
+
 =head1 Machine-Readable Change Log
 
 The file CHANGES was converted into Changelog.ini by L<Module::Metadata::Changes>.
