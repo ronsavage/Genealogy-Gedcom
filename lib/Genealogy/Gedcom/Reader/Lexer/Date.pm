@@ -3,6 +3,10 @@ package Genealogy::Gedcom::Reader::Lexer::Date;
 use strict;
 use warnings;
 
+use DateTime;
+use DateTime::Format::Natural;
+use DateTime::Infinite;
+
 use Hash::FieldHash ':all';
 
 use Text::Abbrev; # For abbrev.
@@ -19,9 +23,9 @@ our $VERSION = '0.80';
 sub _init
 {
 	my($self, $arg)  = @_;
-	$$arg{candidate} ||= '';     # Caller can set.
-	$$arg{century}   ||= '1900'; # Caller can set.
-	$$arg{locale}    ||= 'en';   # Caller can set.
+	$$arg{candidate} ||= '';      # Caller can set.
+	$$arg{century}   ||= '1900';  # Caller can set.
+	$$arg{locale}    ||= 'en_AU'; # Caller can set.
 	my($user_logger) = defined($$arg{logger}); # Caller can set (e.g. to '').
 	$$arg{logger}    = $user_logger ? $$arg{logger} : Log::Handler -> new;
 	$self            = from_hash($self, $arg);
@@ -60,24 +64,26 @@ sub parse
 	my($candidate)  = lc ($arg{candidate} || $self -> candidate);
 	$candidate      =~ s/^\s+//; # Just in case...
 	$candidate      =~ s/\s+$//;
-	my($century)    = $arg{century}       || $self -> century;
-	my($locale)     = $arg{locale}        || $self -> locale;
 
 	die 'No value supplied for candidate date' if (length($candidate) == 0);
+
+	$self -> century($arg{century}) if ($arg{century});
+	$self -> locale($arg{locale})   if ($arg{locale});
 
 	# Phase 1: Handle interpreted case, i.e. /...(...)/.
 
 	my(%date) =
 		(
-		 bc              => 0,
-		 error           => 0,
+		 century         => $self -> century,
 		 escape          => 'dgregorian',
-		 first           => '',
+		 first           => DateTime::Infinite::Past -> new,
 		 first_ambiguous => 0,
+		 first_bc        => 0,
 		 infix           => '',
-		 last            => '',
+		 last            => DateTime::Infinite::Future -> new,
 		 last_ambiguous  => 0,
-		 locale          => $locale,
+		 last_bc         => 0,
+		 locale          => $self -> locale,
 		 phrase          => '',
 		 prefix          => '',
 		);
@@ -96,21 +102,23 @@ sub parse
 
 	my(%abbrev) =
 		(
-		 en => {abbrev (qw/about abt and after before between calculated estimated from  interpreted to/)},
-		 nl => {abbrev (qw/rond      en  na    voor   tussen  calculated estimated vanaf interpreted tot/)},
+		 en_AU => {abbrev (qw/about abt and after before between calculated estimated from  interpreted to/)},
+		 nl_NL => {abbrev (qw/rond      en  na    voor   tussen  calculated estimated vanaf interpreted tot/)},
 		);
 
-	my(@field) = split(/\s+/, $candidate);
+	# Split the date on '-' or spaces.
 
-	if ($abbrev{$locale}{$field[0]})
+	my(@field) = split(/[-\s]+/, $candidate);
+
+	if ($abbrev{$self -> locale}{$field[0]})
 	{
-		$date{prefix} = $abbrev{$locale}{$field[0]};
+		$date{prefix} = $abbrev{$self -> locale}{$field[0]};
 		$date{prefix} = 'about' if ($date{prefix} eq 'abt'); # Sigh.
 
 		shift @field;
 	}
 
-	# Phase 3: Handle date escape.
+	# Phase 3: Handle the date escape.
 
 	if ($field[0] =~ /@#(.+)@/)
 	{
@@ -119,43 +127,9 @@ sub parse
 		shift @field;
 	}
 
-	# Phase 4: Check for date range.
+	# Phase 4: Handle the date(s).
 
-	my(%range_abbrev) =
-		(
-		 en => {abbrev (qw/and to/)},
-		 nl => {abbrev (qw/en  tot/)},
-		);
-
-	my($field);
-	my($offset);
-
-	for my $i (0 .. $#field)
-	{
-		$field = $field[$i];
-
-		if ($range_abbrev{$locale}{$field})
-		{
-			$date{infix} = $range_abbrev{$locale}{$field};
-			$offset      = $i;
-		}
-	}
-
-	# Did we find a range '... and ...' or '... to ...'?
- 
-	if (defined $offset)
-	{
-		# Expect 'd m y' 'and/to' 'd m y'.
-
-		$self -> parse_date(\%date, $locale, $century, @field[0 .. ($offset - 1)]);
-		$self -> parse_date(\%date, $locale, $century, @field[($offset + 1) .. $#field]);
-	}
-	else
-	{
-		# Expect 'd m y', possibly with abbreviations.
-
-		$self -> parse_date(\%date, $locale, $century, @field);
-	}
+	$self -> parse_date(\%date, @field);
 
 	return {%date};
 
@@ -165,36 +139,139 @@ sub parse
 
 sub parse_date
 {
-	my($self, $date, $locale, $century, @field) = @_;
+	my($self, $date, @field) = @_;
 
-	print 'Working with: ', join(', ', @field), ". \n";
+	# Phase 1: Change 'and' to 'to' to keep DateTime::Format::Natural happy.
 
-	# Phase 1: Handle '500B.C.' or similar, including '500 BC'.
+	my($offset_of_to) = - 1;
 
-	if ( ($#field == 1) && ($field[1] =~ /b\.?c\.?/) )
+	for my $i (0 .. $#field)
 	{
-		@field = "$field[0]bc";
+		if ($field[$i] eq 'and')
+		{
+			$$date{infix} = 'and';
+			$field[$i]    = 'to';
+			$offset_of_to = $i;
+		}
+		elsif ($field[$i] eq 'to')
+		{	
+			$$date{infix} = 'to';
+			$offset_of_to = $i;
+		}
 	}
 
-	if ( ($#field == 0) && ($field[0] =~ /(.+)b\.?c\.?$/) )
-	{
-		$$date{bc}    = 1;
-		$$date{first} = "$1-01-01";
+	# Phase 2: Search for 'BC', of which there might be 2.
 
-		return;
+	my(@offset_of_bc);
+
+	for my $i (0 .. $#field)
+	{
+		# Note: The field might contain just 'BC' or something like '500BC'.
+
+		if ($field[$i] =~ /^(\d*)b\.?c\.?$/)
+		{
+			# Remove 'BC'. Allow for year 0 with defined().
+
+			if (defined($1) && $1)
+			{
+				$field[$i] = $1 + 1000;
+			}
+			else
+			{
+				# Save offsets so we can remove 'BC' later.
+
+				push @offset_of_bc, $i;
+
+				# Add 1000 if BC year < 1000, to keep DateTime happy.
+				# This assumes the 'BC' immediately follows the year.
+
+				if ($i > 0)
+				{
+					$field[$i - 1] += $field[$i - 1] < 1000 ? 1000 : 0;
+				}
+			}
+
+			# Flag which date is BC.
+
+			if ( ($offset_of_to < 0) || ($i < $offset_of_to) )
+			{
+				$$date{first_bc} = 1;
+			}
+			else
+			{
+				$$date{last_bc} = 1;
+			}
+		}
 	}
 
-	# Phase 2: Handle an isolated year.
+	# Clean up if there is there a 'BC' or 2.
 
-	if ( ($#field == 0) && ($field[0] =~ /^(\d+)$/) )
+	if ($#offset_of_bc >= 0)
 	{
-		$$date{first}           = "$1-01-01";
-		$$date{first_ambiguous} = 1;
+		splice(@field, $offset_of_bc[0], 1);
 
-		return;
+		# Is there another 'BC'?
+
+		if ($#offset_of_bc > 0)
+		{
+			# We use - 1 because of the above splice.
+
+			splice(@field, $offset_of_bc[1] - 1, 1);
+		}
+	}
+
+	# Phase 3: We have 1 or 2 dates without BCs.
+	# We process them separately, so we can determine if they are ambiguous.
+
+	if ($offset_of_to >= 0)
+	{
+		# We have a 'to', which may be the only date present.
+
+		$self -> parse_date_field('first', $date, @field[0 .. ($offset_of_to - 1)]);
+		$self -> parse_date_field('last',  $date, @field[($offset_of_to + 1) .. $#field]);
+	}
+	else
+	{
+		$self -> parse_date_field('first', $date, @field);
 	}
 
 } # End of parse_date.
+
+# --------------------------------------------------
+
+sub parse_date_field
+{
+	my($self, $which, $date, @field) = @_;
+
+	# Phase 1: Handle an isolated year or a year with a month.
+
+	if ($#field < 2)
+	{
+		$$date{"${which}_ambiguous"} = 1;
+	}
+
+	# Phase 2: Handle missing data and 2-digit years.
+
+	if ($#field == 0)
+	{
+		# This assumes the year is the last and only input field.
+
+		$field[2] = $field[0] + ( ($field[0] < 100) ? $self -> century : 0);
+		$field[1] = 1; # Month.
+		$field[0] = 1; # Day.
+	}
+	elsif ($#field == 1)
+	{
+		# This assumes the year is the last input field, and the month is first.
+
+		$field[2] = $field[1] + ( ($field[1] < 100) ? $self -> century : 0);
+		$field[1] = $field[0]; # Month.
+		$field[0] = 1;         # Day.
+	}
+
+	$$date{$which} = DateTime::Format::Natural -> new -> parse_datetime(join('-', @field) );
+
+} # End of parse_date_field.
 
 # --------------------------------------------------
 
@@ -208,7 +285,7 @@ L<Genealogy::Gedcom::Reader::Lexer::Date> - An OS-independent lexer for GEDCOM d
 
 =head1 Synopsis
 
-	my($locale) = 'en';
+	my($locale) = 'en_AU';
 	my($parser) = Genealogy::Gedcom::Reader::Lexer::Date -> new
 	(
 	locale => $locale,
@@ -278,9 +355,7 @@ Default: 1900.
 
 A string which specifies the desired locale.
 
-Only 'en' is supported. However, some traces of 'nl' (Dutch) are present in the source code (but not in t/date.t).
-
-Default: 'en'.
+Default: 'en_AU'.
 
 =item o logger => $logger_object
 
@@ -316,8 +391,6 @@ Here, the [] indicate an optional parameter.
 
 Get or set the locale.
 
-Only 'en' is supported.
-
 =head2 logger([$logger_object])
 
 Here, the [] indicate an optional parameter.
@@ -348,33 +421,15 @@ $arg{locale}: The locale can be passed in to new as new(locale => $a_string), or
 
 $arg{locale} => $locale takes precedence over new(locale => $locale).
 
-Only 'en' is supported.
-
 The return value is a hashref with these key => value pairs:
 
 =over 4
 
-=item o ambiguous => $Boolean
+=item o century => $integer
 
-Returns 1 if the date is ambiguous.
+Returns the value passed in to new() or parse().
 
-This includes a year by itself, since the month and day are ambiguous.
-
-Default: 0.
-
-=item o bc => $Boolean
-
-Returns 1 if the date contains one of: 'B.C.', 'BC.' or 'BC'.
-
-In the input, this suffix can be separated from the year by spaces.
-
-Default: 0.
-
-=item o error => $Boolean
-
-Returns 1 if the date is invalid.
-
-Default: 0.
+Default: 1900.
 
 =item o escape => $the_escape_string
 
@@ -382,19 +437,39 @@ Default: 'dgregorian' (yes, lower case).
 
 =item o first => $first_date_in_range
 
-Returns the first (or only) date, as 'yyyy-mm-dd' (all digits).
+Returns the first (or only) date as a L<DateTime> object.
 
 This is for cases like '1999' in 'about 1999', and for '1999' in 'Between 1999 and 2000', and '2001' in 'From 2001 to 2002'.
 
-A missing month is returned as 01. A missing day is returned as 01.
+A missing month defaults to 01. A missing day defaults to 01.
 
 '500BC' will be returned as '500-01-01', with the 'bc' flag set.
 
-Default: ''.
+Default: DateTime::Infinite::Past -> new.
 
 =item o first_ambiguous => $Boolean
 
-Returns 1 if the first (or only) date is ambiguous.
+Returns 1 if the first (or only) date is ambiguous. Possibilities:
+
+=over 4
+
+=item o The year is only 2 digits
+
+=item o The month and day are reversible
+
+=back
+
+Default: 0.
+
+=item o first_bc => $Boolean
+
+Returns 1 if the first date is followed by one of: 'B.C.', 'BC.' or 'BC'.
+
+In the input, this suffix can be separated from the year by spaces.
+
+Warning: If this flag is set, the year has 1000 added to it, because L<DateTime> can't handle 1, 2 or 3 digit years.
+
+That means, 500BC is 1500 with the flag set, and 2222BC is 3222 with the flag set.
 
 Default: 0.
 
@@ -406,17 +481,31 @@ Default: ''.
 
 =item o last => $last_date_in_range
 
-Returns the second of 2 dates, as 'yyyy-mm-dd' (all digits).
+Returns the second of 2 dates as a L<DateTime> object.
 
 This is for cases like '2000' in 'Between 1999 and 2000', and '2002' in 'From 2001 to 2002'.
 
-A missing month is returned as 01. A missing day is returned as 01.
+A missing month defaults to 01. A missing day defaults to 01.
 
-Default: ''.
+Default: DateTime::Infinite::Future -> new.
 
 =item o last_ambiguous => $Boolean
 
 Returns 1 if the last date is ambiguous.
+
+See first_ambiguous for situations where this flag is set.
+
+Default: 0.
+
+=item o last_bc => $Boolean
+
+Returns 1 if the second date is followed by one of: 'B.C.', 'BC.' or 'BC'.
+
+In the input, this suffix can be separated from the year by spaces.
+
+Warning: If this flag is set, the year has 1000 added to it, because L<DateTime> can't handle 1, 2 or 3 digit years.
+
+That means, 500BC is 1500 with the flag set, and 2222BC is 3222 with the flag set.
 
 Default: 0.
 
@@ -442,15 +531,11 @@ Default: ''.
 
 =head1 FAQ
 
-=head2 When will you use L<DateTime::Locale> as L<Gedcom::Date> does?
+=head2 Why are dates returned as objects of type DateTime?
 
-One day.
+Because such objects have the sophistication required to handle such a complex topic.
 
-=head2 Why are dates returned as string and not objects of (say) Date::Simple?
-
-Because L<Date::Simple> only accepts 4 digits years, and we might get '500BC'.
-
-And yes, I know, many other date modules are available. See L<http://datetime.perl.org/wiki/datetime/dashboard> for details.
+See L<DateTime> and L<http://datetime.perl.org/wiki/datetime/dashboard> for details.
 
 =head1 Machine-Readable Change Log
 
