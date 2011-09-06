@@ -222,7 +222,7 @@ my($out_string);
 
 for my $candidate (sort keys %{$candidate{$locale} })
 {
-		$date       = $parser -> parse(candidate => $candidate);
+		$date       = $parser -> parse_datetime(candidate => $candidate);
 		$in_string  = join(', ', map{"$_ => '$candidate{$locale}{$candidate}{$_}'"} sort keys %{$candidate{$locale}{$candidate} });
 		$out_string = join(', ', map{"$_ => '$$date{$_}'"} sort keys %$date);
 
