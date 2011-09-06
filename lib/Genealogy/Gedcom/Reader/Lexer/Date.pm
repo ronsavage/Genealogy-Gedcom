@@ -294,28 +294,34 @@ sub parse_duration
 		$prefix = 'to';
 	}
 
-	if ($prefix)
-	{
-		shift @field;
-	}
-	else
+	if (! $prefix)
 	{
 		die "The value of the 'period' key must start with '$$from_to[0]' or '$$from_to[1]'";
 	}
 
 	# Phase 3: Handle the date escape.
-	# We ignore the value because the user always implicitly or explicitly sets a locale.
+	# We ignore the value because the user always (implicitly or explicitly) sets a locale.
 
-	if ($field[0] =~ /@#(.+)@/)
+	my($offset_of_escape) = - 1;
+
+	for my $i (0 .. $#field)
 	{
-		shift @field;
+		if ($field[$i] =~ /@#(.+)@/)
+		{
+			$offset_of_escape = $i;
+		}
 	}
 
-	my(%flags) =
-		(
-		 first_bc  => 0,
-		 second_bc => 0,
-		);
+	splice(@field, $offset_of_escape, 1) if ($offset_of_escape >= 0);
+
+	my(%flags);
+
+	for my $key (qw/first second/)
+	{
+		$flags{$key}               = $key eq 'first' ? DateTime::Infinite::Past -> new : DateTime::Infinite::Future -> new;
+		$flags{"${key}_ambiguous"} = 0;
+		$flags{"${key}_bc"}        = 0;
+	}
 
 	$self -> parse_1or2_dates(\%flags, $from_to, @field);
 
@@ -439,7 +445,7 @@ sub parse_1_date
 	{
 		# This assumes the year is the last and only input field.
 
-		$$flags{"${which}_offset"} = $field[0] < 100 ? 1 : 0;
+		#$$flags{"${which}_offset"} = $field[0] < 100 ? 1 : 0;
 		$field[2]                  = $field[0] + ( ($field[0] < 100) ? $self -> century : 0);
 		$field[1]                  = 1; # Month.
 		$field[0]                  = 1; # Day.
@@ -448,19 +454,17 @@ sub parse_1_date
 	{
 		# This assumes the year is the last input field, and the month is first.
 
-		$$flags{"${which}_offset"} = $field[1] < 100 ? 1 : 0;
+		#$$flags{"${which}_offset"} = $field[1] < 100 ? 1 : 0;
 		$field[2]                  = $field[1] + ( ($field[1] < 100) ? $self -> century : 0);
 		$field[1]                  = $field[0]; # Month.
 		$field[0]                  = 1;         # Day.
 	}
 	else
 	{
-		$$flags{"${which}_offset"} = 0;
+		#$$flags{"${which}_offset"} = 0;
 	}
 
 	$$flags{$which} = DateTime::Format::Natural -> new -> parse_datetime(join('-', @field) );
-
-	print "\t$which: $$flags{$which}. \n";
 
 } # End of parse_1_date.
 
@@ -615,16 +619,6 @@ $arg{locale} => $locale takes precedence over new(locale => $locale).
 The return value is a hashref with these key => value pairs:
 
 =over 4
-
-=item o century => $integer
-
-Returns the value passed in to new() or parse().
-
-Default: 1900.
-
-=item o escape => $the_escape_string
-
-Default: 'dgregorian' (yes, lower case).
 
 =item o first => $first_date_in_range
 
