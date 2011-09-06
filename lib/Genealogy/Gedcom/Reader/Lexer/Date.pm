@@ -382,19 +382,13 @@ sub parse_1or2_dates
 
 			if (defined($1) && $1)
 			{
-				$field[$i] = $1 + 1000;
+				$field[$i] = $1;
 			}
 			else
 			{
 				# Save offsets so we can remove BC later.
 
 				push @offset_of_bc, $i;
-
-				# Add 1000 if BC year < 1000, to keep DateTime happy.
-				# This assumes the BC immediately follows the year,
-				# and hence [$i - 1] is the index of the year.
-
-				$field[$i - 1] += 1000 if ( ($i > 0) && ($field[$i - 1] < 1000) );
 			}
 
 			# Flag which date is BC. They may both be.

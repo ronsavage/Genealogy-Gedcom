@@ -10,6 +10,8 @@ BEGIN {use_ok('Genealogy::Gedcom::Reader::Lexer::Date');}
 
 my($locale) = 'en_AU';
 
+DateTime -> DefaultLocale($locale);
+
 # Candidate value => Result hashref.
 
 my(%duration) =
@@ -18,7 +20,7 @@ en_AU =>
 {
 		'From 0' =>
 		{
-		one           => DateTime -> new(year => 1000, locale => $locale),
+		one           => DateTime -> new(year => 1000),
 		one_1000      => 1,
 		one_ambiguous => 1,
 		one_bc        => 0,
@@ -29,7 +31,7 @@ en_AU =>
 		},
 		'From 0 BC' =>
 		{
-		one           => DateTime -> new(year => 1000, locale => $locale),
+		one           => DateTime -> new(year => 1000),
 		one_1000      => 1,
 		one_ambiguous => 1,
 		one_bc        => 1,
@@ -40,29 +42,29 @@ en_AU =>
 		},
 		'From 0 to 99' =>
 		{
-		one           => DateTime -> new(year => 1000, locale => $locale),
+		one           => DateTime -> new(year => 1000),
 		one_1000      => 1,
 		one_ambiguous => 1,
 		one_bc        => 0,
-		two           => 'inf',
-		two_1000      => 0,
-		two_ambiguous => 0,
+		two           => DateTime -> new(year => 1099),
+		two_1000      => 1,
+		two_ambiguous => 1,
 		two_bc        => 0,
 		},
 		'From 1 Jan 2001 to 2 Feb 2002' =>
 		{
-		one           => DateTime -> new(year => 2001, month => 1, day => 1, locale => $locale),
+		one           => DateTime -> new(year => 2001, month => 1, day => 1),
 		one_1000      => 0,
 		one_ambiguous => 0,
 		one_bc        => 0,
-		two           => DateTime -> new(year => 2002, month => 2, day => 2, locale => $locale),
+		two           => DateTime -> new(year => 2002, month => 2, day => 2),
 		two_1000      => 0,
 		two_ambiguous => 0,
 		two_bc        => 0,
 		},
 		'From 2011' =>
 		{
-		one           => DateTime -> new(year => 2011, locale => $locale),
+		one           => DateTime -> new(year => 2011),
 		one_1000      => 0,
 		one_ambiguous => 1,
 		one_bc        => 0,
@@ -73,7 +75,7 @@ en_AU =>
 		},
 		'From 21 Jun 6004BC.' =>
 		{
-		one           => DateTime -> new(year => 7004, month => 6, day => 21, locale => $locale),
+		one           => DateTime -> new(year => 6004, month => 6, day => 21),
 		one_1000      => 0,
 		one_ambiguous => 0,
 		one_bc        => 1,
@@ -84,7 +86,7 @@ en_AU =>
 		},
 		'From 500B.C.' =>
 		{
-		one           => DateTime -> new(year => 1500, locale => $locale),
+		one           => DateTime -> new(year => 1500),
 		one_1000      => 1,
 		one_ambiguous => 1,
 		one_bc        => 1,
@@ -95,7 +97,7 @@ en_AU =>
 		},
 		'From 500BC' =>
 		{
-		one           => DateTime -> new(year => 1500, locale => $locale),
+		one           => DateTime -> new(year => 1500),
 		one_1000      => 1,
 		one_ambiguous => 1,
 		one_bc        => 1,
@@ -106,7 +108,7 @@ en_AU =>
 		},
 		'From 500BC.' =>
 		{
-		one           => DateTime -> new(year => 1500, locale => $locale),
+		one           => DateTime -> new(year => 1500),
 		one_1000      => 1,
 		one_ambiguous => 1,
 		one_bc        => 1,
@@ -117,7 +119,7 @@ en_AU =>
 		},
 		'From @#DGREGORIAN@ 1 Jan 2000' =>
 		{
-		one           => DateTime -> new(year => 2000, month => 1, day => 1, locale => $locale),
+		one           => DateTime -> new(year => 2000, month => 1, day => 1),
 		one_1000      => 0,
 		one_ambiguous => 0,
 		one_bc        => 0,
@@ -129,7 +131,7 @@ en_AU =>
 		'To 2011' =>
 		{
 		one           => DateTime::Infinite::Past -> new,
-		one_1000      => 1,
+		one_1000      => 0,
 		one_ambiguous => 0,
 		one_bc        => 0,
 		two           => DateTime -> new(year => 2011),
@@ -140,18 +142,18 @@ en_AU =>
 		'To 500 BC' =>
 		{
 		one           => DateTime::Infinite::Past -> new,
-		one_1000      => 1,
+		one_1000      => 0,
 		one_ambiguous => 0,
 		one_bc        => 0,
 		two           => DateTime -> new(year => 1500),
-		two_1000      => 0,
+		two_1000      => 1,
 		two_ambiguous => 1,
 		two_bc        => 1,
 		},
 }
 );
 
-my($parser) = Genealogy::Gedcom::Reader::Lexer::Date -> new(debug => 1, locale => $locale);
+my($parser) = Genealogy::Gedcom::Reader::Lexer::Date -> new(debug => 1);
 
 isa_ok($parser, 'Genealogy::Gedcom::Reader::Lexer::Date');
 
@@ -195,7 +197,7 @@ en_AU =>
 		'2011' =>
 		{
 		escape          => 'dgregorian',
-		one           => DateTime -> new(year => 2011, locale => $locale),
+		one           => DateTime -> new(year => 2011),
 		one_ambiguous => 1,
 		one_bc        => 0,
 		infix           => '',
@@ -208,7 +210,7 @@ en_AU =>
 		'0 BC' =>
 		{
 		escape          => 'dgregorian',
-		one           => DateTime -> new(year => 1000, locale => $locale),
+		one           => DateTime -> new(year => 1000),
 		one_ambiguous => 1,
 		one_bc        => 1,
 		infix           => '',
@@ -221,7 +223,7 @@ en_AU =>
 		'500 BC' =>
 		{
 		escape          => 'dgregorian',
-		one           => DateTime -> new(year => 1500, locale => $locale),
+		one           => DateTime -> new(year => 1500),
 		one_ambiguous => 1,
 		one_bc        => 1,
 		infix           => '',
@@ -234,7 +236,7 @@ en_AU =>
 		'500B.C.' =>
 		{
 		escape          => 'dgregorian',
-		one           => DateTime -> new(year => 1500, locale => $locale),
+		one           => DateTime -> new(year => 1500),
 		one_ambiguous => 1,
 		one_bc        => 1,
 		infix           => '',
@@ -247,7 +249,7 @@ en_AU =>
 		'500BC' =>
 		{
 		escape          => 'dgregorian',
-		one           => DateTime -> new(year => 1500, locale => $locale),
+		one           => DateTime -> new(year => 1500),
 		one_ambiguous => 1,
 		one_bc        => 1,
 		infix           => '',
@@ -260,7 +262,7 @@ en_AU =>
 		'500BC.' =>
 		{
 		escape          => 'dgregorian',
-		one           => DateTime -> new(year => 1500, locale => $locale),
+		one           => DateTime -> new(year => 1500),
 		one_ambiguous => 1,
 		one_bc        => 1,
 		infix           => '',
@@ -273,7 +275,7 @@ en_AU =>
 		'21 Jun 6004BC.' =>
 		{
 		escape          => 'dgregorian',
-		one           => DateTime -> new(year => 7004, month => 6, day => 21, locale => $locale),
+		one           => DateTime -> new(year => 7004, month => 6, day => 21),
 		one_ambiguous => 0,
 		one_bc        => 1,
 		infix           => '',
@@ -286,7 +288,7 @@ en_AU =>
 		'@#DGREGORIAN@ 1 Jan 2000' =>
 		{
 		escape          => 'dgregorian',
-		one           => DateTime -> new(year => 2000, month => 1, day => 1, locale => $locale),
+		one           => DateTime -> new(year => 2000, month => 1, day => 1),
 		one_ambiguous => 0,
 		one_bc        => 0,
 		infix           => '',
@@ -299,7 +301,7 @@ en_AU =>
 		'Abt 1999 (Unsure of date)' =>
 		{
 		escape          => 'dgregorian',
-		one           => DateTime -> new(year => 1999, locale => $locale),
+		one           => DateTime -> new(year => 1999),
 		one_ambiguous => 1,
 		one_bc        => 0,
 		infix           => '',
@@ -312,7 +314,7 @@ en_AU =>
 		'Bef 3 Mar 2003' =>
 		{
 		escape          => 'dgregorian',
-		one           => DateTime -> new(year => 2003, month => 3, day => 3, locale => $locale),
+		one           => DateTime -> new(year => 2003, month => 3, day => 3),
 		one_ambiguous => 0,
 		one_bc        => 0,
 		infix           => '',
@@ -325,11 +327,11 @@ en_AU =>
 		'Bet 4 Apr 2004 and 5 May 2005' =>
 		{
 		escape          => 'dgregorian',
-		one           => DateTime -> new(year => 2004, month => 4, day => 4, locale => $locale),
+		one           => DateTime -> new(year => 2004, month => 4, day => 4),
 		one_ambiguous => 0,
 		one_bc        => 0,
 		infix           => 'and',
-		two            => DateTime -> new(year => 2005, month => 5, day => 5, locale => $locale),
+		two            => DateTime -> new(year => 2005, month => 5, day => 5),
 		two_ambiguous  => 0,
 		two_bc         => 0,
 		phrase          => '',
@@ -338,11 +340,11 @@ en_AU =>
 		'From 1 Jan 2001 to 2 Feb 2002' =>
 		{
 		escape          => 'dgregorian',
-		one           => DateTime -> new(year => 2001, month => 1, day => 1, locale => $locale),
+		one           => DateTime -> new(year => 2001, month => 1, day => 1),
 		one_ambiguous => 0,
 		one_bc        => 0,
 		infix           => 'to',
-		two            => DateTime -> new(year => 2002, month => 2, day => 2, locale => $locale),
+		two            => DateTime -> new(year => 2002, month => 2, day => 2),
 		two_ambiguous  => 0,
 		two_bc         => 0,
 		phrase          => '',
