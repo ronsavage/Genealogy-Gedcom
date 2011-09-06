@@ -42,7 +42,7 @@ sub check_date
 	}
 	else
 	{
-		my($date) = Genealogy::Gedcom::Reader::Lexer::Date -> new(candidate => $$line[4]) -> parse_datetime;
+		my($date) = Genealogy::Gedcom::Reader::Lexer::Date -> new(period => $$line[4]) -> parse_datetime;
 
 		$self -> log(info => "Candidate: $date");
 		$self -> push_item($line, 'Date');

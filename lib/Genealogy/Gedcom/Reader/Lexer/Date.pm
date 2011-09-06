@@ -11,10 +11,10 @@ use Hash::FieldHash ':all';
 
 use Text::Abbrev; # For abbrev.
 
-fieldhash my %candidate => 'candidate';
 fieldhash my %century   => 'century';
 fieldhash my %from_to   => 'from_to';
 fieldhash my %locale    => 'locale';
+fieldhash my %period    => 'period';
 
 our $VERSION = '0.80';
 
@@ -23,10 +23,10 @@ our $VERSION = '0.80';
 sub _init
 {
 	my($self, $arg)  = @_;
-	$$arg{candidate} ||= '';            # Caller can set.
 	$$arg{century}   ||= '1900';        # Caller can set.
 	$$arg{from_to}   ||= [qw/from to/]; # Caller can set.
 	$$arg{locale}    ||= 'en_AU';       # Caller can set.
+	$$arg{period}    ||= '';            # Caller can set.
 	$self            = from_hash($self, $arg);
 
 	return $self;
@@ -188,11 +188,11 @@ sub _parse_date_field
 sub parse_datetime
 {
 	my($self, %arg) = @_;
-	my($candidate)  = lc ($arg{candidate} || $self -> candidate);
-	$candidate      =~ s/^\s+//; # Just in case...
-	$candidate      =~ s/\s+$//;
+	my($period)     = lc ($arg{period} || $self -> period);
+	$period         =~ s/^\s+//; # Just in case...
+	$period         =~ s/\s+$//;
 
-	die 'No value supplied for candidate date' if (length($candidate) == 0);
+	die "No value supplied for the 'period' key" if (length($period) == 0);
 
 	$self -> century($arg{century}) if ($arg{century});
 	$self -> locale($arg{locale})   if ($arg{locale});
@@ -215,13 +215,13 @@ sub parse_datetime
 		 prefix          => '',
 		);
 
-	if ($candidate =~ /^(.*)\((.*)\)/)
+	if ($period =~ /^(.*)\((.*)\)/)
 	{
-		$candidate    = $1 || '';
+		$period       = $1 || '';
 		$date{phrase} = $2 || ''; # Allow for '... ()'.
 	}
 
-	return {%date} if (length($candidate) == 0);
+	return {%date} if (length($period) == 0);
 
 	# Phase 2: Handle leading word or abbreviation.
 	# Note: This hash deliberately includes words from ranges, as documentation,
@@ -235,7 +235,7 @@ sub parse_datetime
 
 	# Split the date on '-' or spaces.
 
-	my(@field) = split(/[-\s]+/, $candidate);
+	my(@field) = split(/[-\s]+/, $period);
 
 	if ($abbrev{$self -> locale}{$field[0]})
 	{
@@ -311,9 +311,15 @@ sub parse_duration
 		shift @field;
 	}
 
-	$self -> parse_1or2_dates($from_to, @field);
+	my(%flags) =
+		(
+		 first_bc  => 0,
+		 second_bc => 0,
+		);
 
-	return 'Period: ' . join(', ', @field);
+	$self -> parse_1or2_dates(\%flags, $from_to, @field);
+
+	return {%flags};
 
 } # End of parse_duration.
 
@@ -321,7 +327,7 @@ sub parse_duration
 
 sub parse_1or2_dates
 {
-	my($self, $from_to, @field) = @_;
+	my($self, $flags, $from_to, @field) = @_;
 
 	# Phase 1: Check for embedded 'to'.
 
@@ -337,7 +343,6 @@ sub parse_1or2_dates
 
 	# Phase 2: Search for BC, of which there might be 2.
 
-	my(%flags);
 	my(@offset_of_bc);
 
 	for my $i (0 .. $#field)
@@ -372,11 +377,11 @@ sub parse_1or2_dates
 
 			if ( ($offset_of_to < 0) || ($i < $offset_of_to) )
 			{
-				$flags{from_bc} = 1;
+				$$flags{first_bc} = 1;
 			}
 			else
 			{
-				$flags{to_bc} = 1;
+				$$flags{second_bc} = 1;
 			}
 		}
 	}
@@ -406,30 +411,27 @@ sub parse_1or2_dates
 	{
 		# We have a 'to', which may be the only date present.
 
-		$self -> _parse_1_date('from', \%flags, @field[0 .. ($offset_of_to - 1)]) if ($offset_of_to > 0);
-		$self -> _parse_1_date('to',   \%flags, @field[($offset_of_to + 1) .. $#field]);
+		$self -> parse_1_date('first',  $flags, @field[0 .. ($offset_of_to - 1)]) if ($offset_of_to > 0);
+		$self -> parse_1_date('second', $flags, @field[($offset_of_to + 1) .. $#field]);
 	}
 	else
 	{
 		# We have 1 date, and it's not a 'to'.
 
-		$self -> _parse_1_date('from_is', \%flags, @field);
+		$self -> parse_1_date('first', $flags, @field);
 	}
 
 } # End of parse_1or2_dates.
 
 # --------------------------------------------------
 
-sub _parse_1_date
+sub parse_1_date
 {
 	my($self, $which, $flags, @field) = @_;
 
-	# Phase 1: Handle an isolated year or a year with a month.
+	# Phase 1: Flag an isolated year or a year with a month.
 
-	if ($#field < 2)
-	{
-		$$flags{"${which}_ambiguous"} = 1;
-	}
+	$$flags{"${which}_ambiguous"} = $#field < 2 ? 1 : 0;
 
 	# Phase 2: Handle missing data and 2-digit years.
 
@@ -437,24 +439,30 @@ sub _parse_1_date
 	{
 		# This assumes the year is the last and only input field.
 
-		$field[2] = $field[0] + ( ($field[0] < 100) ? $self -> century : 0);
-		$field[1] = 1; # Month.
-		$field[0] = 1; # Day.
+		$$flags{"${which}_offset"} = $field[0] < 100 ? 1 : 0;
+		$field[2]                  = $field[0] + ( ($field[0] < 100) ? $self -> century : 0);
+		$field[1]                  = 1; # Month.
+		$field[0]                  = 1; # Day.
 	}
 	elsif ($#field == 1)
 	{
 		# This assumes the year is the last input field, and the month is first.
 
-		$field[2] = $field[1] + ( ($field[1] < 100) ? $self -> century : 0);
-		$field[1] = $field[0]; # Month.
-		$field[0] = 1;         # Day.
+		$$flags{"${which}_offset"} = $field[1] < 100 ? 1 : 0;
+		$field[2]                  = $field[1] + ( ($field[1] < 100) ? $self -> century : 0);
+		$field[1]                  = $field[0]; # Month.
+		$field[0]                  = 1;         # Day.
+	}
+	else
+	{
+		$$flags{"${which}_offset"} = 0;
 	}
 
 	$$flags{$which} = DateTime::Format::Natural -> new -> parse_datetime(join('-', @field) );
 
 	print "\t$which: $$flags{$which}. \n";
 
-} # End of _parse_1_date.
+} # End of parse_1_date.
 
 # --------------------------------------------------
 
