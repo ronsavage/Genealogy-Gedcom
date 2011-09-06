@@ -311,9 +311,150 @@ sub parse_duration
 		shift @field;
 	}
 
+	$self -> parse_1or2_dates($from_to, @field);
+
 	return 'Period: ' . join(', ', @field);
 
 } # End of parse_duration.
+
+# --------------------------------------------------
+
+sub parse_1or2_dates
+{
+	my($self, $from_to, @field) = @_;
+
+	# Phase 1: Check for embedded 'to'.
+
+	my($offset_of_to) = - 1;
+
+	for my $i (0 .. $#field)
+	{
+		if ($field[$i] eq $$from_to[1])
+		{	
+			$offset_of_to = $i;
+		}
+	}
+
+	# Phase 2: Search for BC, of which there might be 2.
+
+	my(%flags);
+	my(@offset_of_bc);
+
+	for my $i (0 .. $#field)
+	{
+		# Note: The field might contain just BC or something like 500BC.
+
+		if ($field[$i] =~ /^(\d*)b\.?c\.?$/)
+		{
+			# Remove BC. Allow for year 0 with defined().
+
+			if (defined($1) && $1)
+			{
+				$field[$i] = $1 + 1000;
+			}
+			else
+			{
+				# Save offsets so we can remove BC later.
+
+				push @offset_of_bc, $i;
+
+				# Add 1000 if BC year < 1000, to keep DateTime happy.
+				# This assumes the BC immediately follows the year,
+				# and hence [$i - 1] is the index of the year.
+
+				if ($i > 0)
+				{
+					$field[$i - 1] += $field[$i - 1] < 1000 ? 1000 : 0;
+				}
+			}
+
+			# Flag which date is BC. They may both be.
+
+			if ( ($offset_of_to < 0) || ($i < $offset_of_to) )
+			{
+				$flags{from_bc} = 1;
+			}
+			else
+			{
+				$flags{to_bc} = 1;
+			}
+		}
+	}
+
+	# Clean up if there is there a BC or 2.
+
+	if ($#offset_of_bc >= 0)
+	{
+		# Discard 1st BC.
+
+		splice(@field, $offset_of_bc[0], 1);
+
+		# Is there another BC?
+
+		if ($#offset_of_bc > 0)
+		{
+			# We use - 1 because of the above splice.
+
+			splice(@field, $offset_of_bc[1] - 1, 1);
+		}
+	}
+
+	# Phase 3: We have 1 or 2 dates without BCs.
+	# We process them separately, so we can determine if they are ambiguous.
+
+	if ($offset_of_to >= 0)
+	{
+		# We have a 'to', which may be the only date present.
+
+		$self -> _parse_1_date('from', \%flags, @field[0 .. ($offset_of_to - 1)]) if ($offset_of_to > 0);
+		$self -> _parse_1_date('to',   \%flags, @field[($offset_of_to + 1) .. $#field]);
+	}
+	else
+	{
+		# We have 1 date, and it's not a 'to'.
+
+		$self -> _parse_1_date('from_is', \%flags, @field);
+	}
+
+} # End of parse_1or2_dates.
+
+# --------------------------------------------------
+
+sub _parse_1_date
+{
+	my($self, $which, $flags, @field) = @_;
+
+	# Phase 1: Handle an isolated year or a year with a month.
+
+	if ($#field < 2)
+	{
+		$$flags{"${which}_ambiguous"} = 1;
+	}
+
+	# Phase 2: Handle missing data and 2-digit years.
+
+	if ($#field == 0)
+	{
+		# This assumes the year is the last and only input field.
+
+		$field[2] = $field[0] + ( ($field[0] < 100) ? $self -> century : 0);
+		$field[1] = 1; # Month.
+		$field[0] = 1; # Day.
+	}
+	elsif ($#field == 1)
+	{
+		# This assumes the year is the last input field, and the month is first.
+
+		$field[2] = $field[1] + ( ($field[1] < 100) ? $self -> century : 0);
+		$field[1] = $field[0]; # Month.
+		$field[0] = 1;         # Day.
+	}
+
+	$$flags{$which} = DateTime::Format::Natural -> new -> parse_datetime(join('-', @field) );
+
+	print "\t$which: $$flags{$which}. \n";
+
+} # End of _parse_1_date.
 
 # --------------------------------------------------
 
