@@ -58,86 +58,7 @@ sub new
 
 # --------------------------------------------------
 
-sub parse
-{
-	my($self, %arg) = @_;
-	my($candidate)  = lc ($arg{candidate} || $self -> candidate);
-	$candidate      =~ s/^\s+//; # Just in case...
-	$candidate      =~ s/\s+$//;
-
-	die 'No value supplied for candidate date' if (length($candidate) == 0);
-
-	$self -> century($arg{century}) if ($arg{century});
-	$self -> locale($arg{locale})   if ($arg{locale});
-
-	# Phase 1: Handle interpreted case, i.e. /...(...)/.
-
-	my(%date) =
-		(
-		 century         => $self -> century,
-		 escape          => 'dgregorian',
-		 first           => DateTime::Infinite::Past -> new,
-		 first_ambiguous => 0,
-		 first_bc        => 0,
-		 infix           => '',
-		 last            => DateTime::Infinite::Future -> new,
-		 last_ambiguous  => 0,
-		 last_bc         => 0,
-		 locale          => $self -> locale,
-		 phrase          => '',
-		 prefix          => '',
-		);
-
-	if ($candidate =~ /^(.*)\((.*)\)/)
-	{
-		$candidate    = $1 || '';
-		$date{phrase} = $2 || ''; # Allow for '... ()'.
-	}
-
-	return {%date} if (length($candidate) == 0);
-
-	# Phase 2: Handle leading word or abbreviation.
-	# Note: This hash deliberately includes words from ranges, as documentation,
-	# even though ranges are checked separately below.
-
-	my(%abbrev) =
-		(
-		 en_AU => {abbrev (qw/about abt and after before between calculated estimated from  interpreted to/)},
-		 nl_NL => {abbrev (qw/rond      en  na    voor   tussen  calculated estimated vanaf interpreted tot/)},
-		);
-
-	# Split the date on '-' or spaces.
-
-	my(@field) = split(/[-\s]+/, $candidate);
-
-	if ($abbrev{$self -> locale}{$field[0]})
-	{
-		$date{prefix} = $abbrev{$self -> locale}{$field[0]};
-		$date{prefix} = 'about' if ($date{prefix} eq 'abt'); # Sigh.
-
-		shift @field;
-	}
-
-	# Phase 3: Handle the date escape.
-
-	if ($field[0] =~ /@#(.+)@/)
-	{
-		$date{escape} = $1;
-
-		shift @field;
-	}
-
-	# Phase 4: Handle the date(s).
-
-	$self -> parse_date(\%date, @field);
-
-	return {%date};
-
-} # End of parse.
-
-# --------------------------------------------------
-
-sub parse_date
+sub _parse_date
 {
 	my($self, $date, @field) = @_;
 
@@ -232,14 +153,14 @@ sub parse_date
 	}
 	else
 	{
-		$self -> parse_date_field('first', $date, @field);
+		$self -> _parse_date_field('first', $date, @field);
 	}
 
-} # End of parse_date.
+} # End of _parse_date.
 
 # --------------------------------------------------
 
-sub parse_date_field
+sub _parse_date_field
 {
 	my($self, $which, $date, @field) = @_;
 
@@ -271,7 +192,86 @@ sub parse_date_field
 
 	$$date{$which} = DateTime::Format::Natural -> new -> parse_datetime(join('-', @field) );
 
-} # End of parse_date_field.
+} # End of _parse_date_field.
+
+# --------------------------------------------------
+
+sub parse_datetime
+{
+	my($self, %arg) = @_;
+	my($candidate)  = lc ($arg{candidate} || $self -> candidate);
+	$candidate      =~ s/^\s+//; # Just in case...
+	$candidate      =~ s/\s+$//;
+
+	die 'No value supplied for candidate date' if (length($candidate) == 0);
+
+	$self -> century($arg{century}) if ($arg{century});
+	$self -> locale($arg{locale})   if ($arg{locale});
+
+	# Phase 1: Handle interpreted case, i.e. /...(...)/.
+
+	my(%date) =
+		(
+		 century         => $self -> century,
+		 escape          => 'dgregorian',
+		 first           => DateTime::Infinite::Past -> new,
+		 first_ambiguous => 0,
+		 first_bc        => 0,
+		 infix           => '',
+		 last            => DateTime::Infinite::Future -> new,
+		 last_ambiguous  => 0,
+		 last_bc         => 0,
+		 locale          => $self -> locale,
+		 phrase          => '',
+		 prefix          => '',
+		);
+
+	if ($candidate =~ /^(.*)\((.*)\)/)
+	{
+		$candidate    = $1 || '';
+		$date{phrase} = $2 || ''; # Allow for '... ()'.
+	}
+
+	return {%date} if (length($candidate) == 0);
+
+	# Phase 2: Handle leading word or abbreviation.
+	# Note: This hash deliberately includes words from ranges, as documentation,
+	# even though ranges are checked separately below.
+
+	my(%abbrev) =
+		(
+		 en_AU => {abbrev (qw/about abt and after before between calculated estimated from  interpreted to/)},
+		 nl_NL => {abbrev (qw/rond      en  na    voor   tussen  calculated estimated vanaf interpreted tot/)},
+		);
+
+	# Split the date on '-' or spaces.
+
+	my(@field) = split(/[-\s]+/, $candidate);
+
+	if ($abbrev{$self -> locale}{$field[0]})
+	{
+		$date{prefix} = $abbrev{$self -> locale}{$field[0]};
+		$date{prefix} = 'about' if ($date{prefix} eq 'abt'); # Sigh.
+
+		shift @field;
+	}
+
+	# Phase 3: Handle the date escape.
+
+	if ($field[0] =~ /@#(.+)@/)
+	{
+		$date{escape} = $1;
+
+		shift @field;
+	}
+
+	# Phase 4: Handle the date(s).
+
+	$self -> _parse_date(\%date, @field);
+
+	return {%date};
+
+} # End of parse_datetime.
 
 # --------------------------------------------------
 
