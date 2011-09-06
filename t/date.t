@@ -117,6 +117,28 @@ en_AU =>
 		two_ambiguous => 0,
 		two_bc        => 0,
 		},
+		'From 500BC to 400' =>
+		{
+		one           => DateTime -> new(year => 1500),
+		one_1000      => 1,
+		one_ambiguous => 1,
+		one_bc        => 1,
+		two           => DateTime -> new(year => 1400),
+		two_1000      => 1,
+		two_ambiguous => 1,
+		two_bc        => 0,
+		},
+		'From 500BC to 400BC' =>
+		{
+		one           => DateTime -> new(year => 1500),
+		one_1000      => 1,
+		one_ambiguous => 1,
+		one_bc        => 1,
+		two           => DateTime -> new(year => 1400),
+		two_1000      => 1,
+		two_ambiguous => 1,
+		two_bc        => 1,
+		},
 		'From @#DGREGORIAN@ 1 Jan 2000' =>
 		{
 		one           => DateTime -> new(year => 2000, month => 1, day => 1),
@@ -169,7 +191,7 @@ for my $duration (sort keys %{$duration{$locale} })
 
 		ok($in_string eq $out_string, "Testing: $duration");
 
-		if ($ENV{AUTHOR_TEST})
+		if ($parser -> debug)
 		{
 				diag "In:  $in_string.";
 				diag "Out: $out_string";
