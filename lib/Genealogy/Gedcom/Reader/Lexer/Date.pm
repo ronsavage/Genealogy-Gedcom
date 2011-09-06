@@ -13,8 +13,8 @@ use Text::Abbrev; # For abbrev.
 
 fieldhash my %candidate => 'candidate';
 fieldhash my %century   => 'century';
+fieldhash my %from_to   => 'from_to';
 fieldhash my %locale    => 'locale';
-fieldhash my %logger    => 'logger';
 
 our $VERSION = '0.80';
 
@@ -23,26 +23,15 @@ our $VERSION = '0.80';
 sub _init
 {
 	my($self, $arg)  = @_;
-	$$arg{candidate} ||= '';      # Caller can set.
-	$$arg{century}   ||= '1900';  # Caller can set.
-	$$arg{locale}    ||= 'en_AU'; # Caller can set.
-	my($user_logger) = defined($$arg{logger}); # Caller can set (e.g. to '').
-	$$arg{logger}    = $user_logger ? $$arg{logger} : Log::Handler -> new;
+	$$arg{candidate} ||= '';            # Caller can set.
+	$$arg{century}   ||= '1900';        # Caller can set.
+	$$arg{from_to}   ||= [qw/from to/]; # Caller can set.
+	$$arg{locale}    ||= 'en_AU';       # Caller can set.
 	$self            = from_hash($self, $arg);
 
 	return $self;
 
 } # End of _init.
-
-# --------------------------------------------------
-
-sub log
-{
-	my($self, $level, $s) = @_;
-
-	$self -> logger -> $level($s) if ($self -> logger);
-
-} # End of log.
 
 # --------------------------------------------------
 
@@ -272,6 +261,59 @@ sub parse_datetime
 	return {%date};
 
 } # End of parse_datetime.
+
+# --------------------------------------------------
+
+sub parse_duration
+{
+	my($self, %arg) = @_;
+	my($period)     = lc ($arg{period} || $self -> period);
+	$period         =~ s/^\s+//;
+	$period         =~ s/\s+$//;
+	my($from_to)    = $arg{from_to} || $self -> from_to;
+
+	# Phase 1: Validate parameters.
+
+	die "No value of the 'period' key"                                     if (length($period) == 0);
+	die "The value of the 'from_to' key must be an arrayref of 2 elements" if ( (! ref $from_to) || (ref $from_to ne 'ARRAY') || ($#$from_to != 1) );
+
+	$from_to = [map{lc} @$from_to];
+
+	# Phase 2: Split the date on '-' or spaces, so we can check for 'from' and 'to'.
+	# Expected format is something like 'from 21 jun 1950 to 21 jun 2011'.
+
+	my(@field)  = split(/[-\s]+/, $period);
+	my($prefix) = '';
+
+	if ($field[0] eq $$from_to[0])
+	{
+		$prefix = 'from';
+	}
+	elsif ($field[0] eq $$from_to[1])
+	{
+		$prefix = 'to';
+	}
+
+	if ($prefix)
+	{
+		shift @field;
+	}
+	else
+	{
+		die "The value of the 'period' key must start with '$$from_to[0]' or '$$from_to[1]'";
+	}
+
+	# Phase 3: Handle the date escape.
+	# We ignore the value because the user always implicitly or explicitly sets a locale.
+
+	if ($field[0] =~ /@#(.+)@/)
+	{
+		shift @field;
+	}
+
+	return 'Period: ' . join(', ', @field);
+
+} # End of parse_duration.
 
 # --------------------------------------------------
 

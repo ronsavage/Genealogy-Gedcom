@@ -27,6 +27,11 @@
 1   CHAR ANSEL
 1   SUBM @SUBM1@
 
+0 @SOU1@ SOUR
+1   DATA
+2     EVEN FACT
+3       DATE FROM 21 Jun 1950 TO 21 Jun 2011
+
 0 @SUBM1@ SUBM
 1   NAME A Submitter
 1   NOTE Nota bene
@@ -53,6 +58,10 @@
 2     DATE 22 Dec 1775
 1   SEX M
 1   FAMS F1
+
+0 @F1@ FAM
+1   HUSB @I1@
+1   WIFE @I3@
 
 0 @I2@ INDI
 1   NAME John /Smith/
