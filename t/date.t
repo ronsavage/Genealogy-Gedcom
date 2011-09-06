@@ -2,6 +2,7 @@ use strict;
 use warnings;
 
 use DateTime;
+use DateTime::Infinite;
 
 use Test::More;
 
@@ -105,30 +106,30 @@ en_AU =>
 		},
 		'To 2011' =>
 		{
-		first             => DateTime -> new(year => 2011, locale => $locale),
-		first_ambiguous   => 1,
+		first             => DateTime::Infinite::Past -> new,
+		first_ambiguous   => 0,
 		first_bc          => 0,
 		#first_offset      => 0,
-		second            => 'inf',
-		second_ambiguous  => 0,
+		second            => DateTime -> new(year => 2011),
+		second_ambiguous  => 1,
 		second_bc         => 0,
 		#second_offset     => 0,
 		},
 		'To 500 BC' =>
 		{
-		first             => DateTime -> new(year => 1500, locale => $locale),
-		first_ambiguous   => 1,
-		first_bc          => 1,
+		first             => DateTime::Infinite::Past -> new,
+		first_ambiguous   => 0,
+		first_bc          => 0,
 		#first_offset      => 1,
-		second            => 'inf',
-		second_ambiguous  => 0,
-		second_bc         => 0,
+		second            => DateTime -> new(year => 1500),
+		second_ambiguous  => 1,
+		second_bc         => 1,
 		#second_offset     => 0,
 		},
 }
 );
 
-my($parser) = Genealogy::Gedcom::Reader::Lexer::Date -> new(locale => $locale);
+my($parser) = Genealogy::Gedcom::Reader::Lexer::Date -> new(debug => 1, locale => $locale);
 
 isa_ok($parser, 'Genealogy::Gedcom::Reader::Lexer::Date');
 

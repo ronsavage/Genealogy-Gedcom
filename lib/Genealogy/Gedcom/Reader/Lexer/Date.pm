@@ -12,6 +12,7 @@ use Hash::FieldHash ':all';
 use Text::Abbrev; # For abbrev.
 
 fieldhash my %century   => 'century';
+fieldhash my %debug     => 'debug';
 fieldhash my %from_to   => 'from_to';
 fieldhash my %locale    => 'locale';
 fieldhash my %period    => 'period';
@@ -24,6 +25,7 @@ sub _init
 {
 	my($self, $arg)  = @_;
 	$$arg{century}   ||= '1900';        # Caller can set.
+	$$arg{debug}     ||= 0;             # Caller can set.
 	$$arg{from_to}   ||= [qw/from to/]; # Caller can set.
 	$$arg{locale}    ||= 'en_AU';       # Caller can set.
 	$$arg{period}    ||= '';            # Caller can set.
@@ -32,6 +34,16 @@ sub _init
 	return $self;
 
 } # End of _init.
+
+# --------------------------------------------------
+
+sub log
+{
+	my($self, $s) = @_;
+
+	print STDERR "#\t$s. \n" if ($self -> debug);
+
+} # End of log.
 
 # --------------------------------------------------
 
@@ -312,7 +324,9 @@ sub parse_duration
 		}
 	}
 
+	$self -> log('Before splice escape: ' . join(', ', @field) );
 	splice(@field, $offset_of_escape, 1) if ($offset_of_escape >= 0);
+	$self -> log('After splice escape:  ' . join(', ', @field) );
 
 	my(%flags);
 
@@ -337,13 +351,21 @@ sub parse_1or2_dates
 
 	# Phase 1: Check for embedded 'to'.
 
-	my($offset_of_to) = - 1;
+	my(%offset) =
+		(
+		 from => - 1,
+		 to   => - 1,
+		);
 
 	for my $i (0 .. $#field)
 	{
+		if ($field[$i] eq $$from_to[0])
+		{	
+			$offset{from} = $i;
+		}
 		if ($field[$i] eq $$from_to[1])
 		{	
-			$offset_of_to = $i;
+			$offset{to} = $i;
 		}
 	}
 
@@ -381,7 +403,7 @@ sub parse_1or2_dates
 
 			# Flag which date is BC. They may both be.
 
-			if ( ($offset_of_to < 0) || ($i < $offset_of_to) )
+			if ( ($offset{to} < 0) || ($i < $offset{to}) )
 			{
 				$$flags{first_bc} = 1;
 			}
@@ -410,21 +432,23 @@ sub parse_1or2_dates
 		}
 	}
 
+	$self -> log('After BC splice: ' . join(', ', @field) );
+
 	# Phase 3: We have 1 or 2 dates without BCs.
 	# We process them separately, so we can determine if they are ambiguous.
 
-	if ($offset_of_to >= 0)
+	if ($offset{from} >= 0)
 	{
-		# We have a 'to', which may be the only date present.
+		my($end) = $offset{to} >= 0 ? $offset{to} - 1 : $#field;
 
-		$self -> parse_1_date('first',  $flags, @field[0 .. ($offset_of_to - 1)]) if ($offset_of_to > 0);
-		$self -> parse_1_date('second', $flags, @field[($offset_of_to + 1) .. $#field]);
+		$self -> parse_1_date('first',  $flags, @field[($offset{from} + 1) .. $end]);
 	}
-	else
-	{
-		# We have 1 date, and it's not a 'to'.
 
-		$self -> parse_1_date('first', $flags, @field);
+	if ($offset{to} >= 0)
+	{
+		my($start) = $offset{to} >= 0 ? $offset{to} + 1 : 0;
+
+		$self -> parse_1_date('second', $flags, @field[$start .. $#field]);
 	}
 
 } # End of parse_1or2_dates.
