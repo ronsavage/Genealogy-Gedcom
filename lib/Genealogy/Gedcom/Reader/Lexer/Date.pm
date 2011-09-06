@@ -149,12 +149,12 @@ sub _parse_date
 	{
 		# We have a 'to', which may be the only date present.
 
-		$self -> parse_date_field('first', $date, @field[0 .. ($offset_of_to - 1)]);
-		$self -> parse_date_field('last',  $date, @field[($offset_of_to + 1) .. $#field]);
+		$self -> parse_date_field('one', $date, @field[0 .. ($offset_of_to - 1)]);
+		$self -> parse_date_field('two',  $date, @field[($offset_of_to + 1) .. $#field]);
 	}
 	else
 	{
-		$self -> _parse_date_field('first', $date, @field);
+		$self -> _parse_date_field('one', $date, @field);
 	}
 
 } # End of _parse_date.
@@ -299,11 +299,11 @@ sub parse_duration
 
 	if ($field[0] eq $$from_to[0])
 	{
-		$prefix = 'from';
+		$prefix = 'one';
 	}
 	elsif ($field[0] eq $$from_to[1])
 	{
-		$prefix = 'to';
+		$prefix = 'two';
 	}
 
 	if (! $prefix)
@@ -324,15 +324,14 @@ sub parse_duration
 		}
 	}
 
-	$self -> log('Before splice escape: ' . join(', ', @field) );
 	splice(@field, $offset_of_escape, 1) if ($offset_of_escape >= 0);
-	$self -> log('After splice escape:  ' . join(', ', @field) );
 
 	my(%flags);
 
-	for my $key (qw/first second/)
+	for my $key (qw/one two/)
 	{
-		$flags{$key}               = $key eq 'first' ? DateTime::Infinite::Past -> new : DateTime::Infinite::Future -> new;
+		$flags{$key}               = $key eq 'one' ? DateTime::Infinite::Past -> new : DateTime::Infinite::Future -> new;
+		$flags{"${key}_1000"}      = 0;
 		$flags{"${key}_ambiguous"} = 0;
 		$flags{"${key}_bc"}        = 0;
 	}
@@ -353,19 +352,19 @@ sub parse_1or2_dates
 
 	my(%offset) =
 		(
-		 from => - 1,
-		 to   => - 1,
+		 one => - 1,
+		 two  => - 1,
 		);
 
 	for my $i (0 .. $#field)
 	{
 		if ($field[$i] eq $$from_to[0])
 		{	
-			$offset{from} = $i;
+			$offset{one} = $i;
 		}
 		if ($field[$i] eq $$from_to[1])
 		{	
-			$offset{to} = $i;
+			$offset{two} = $i;
 		}
 	}
 
@@ -395,21 +394,18 @@ sub parse_1or2_dates
 				# This assumes the BC immediately follows the year,
 				# and hence [$i - 1] is the index of the year.
 
-				if ($i > 0)
-				{
-					$field[$i - 1] += $field[$i - 1] < 1000 ? 1000 : 0;
-				}
+				$field[$i - 1] += 1000 if ( ($i > 0) && ($field[$i - 1] < 1000) );
 			}
 
 			# Flag which date is BC. They may both be.
 
-			if ( ($offset{to} < 0) || ($i < $offset{to}) )
+			if ( ($offset{two} < 0) || ($i < $offset{two}) )
 			{
-				$$flags{first_bc} = 1;
+				$$flags{one_bc} = 1;
 			}
 			else
 			{
-				$$flags{second_bc} = 1;
+				$$flags{two_bc} = 1;
 			}
 		}
 	}
@@ -432,23 +428,21 @@ sub parse_1or2_dates
 		}
 	}
 
-	$self -> log('After BC splice: ' . join(', ', @field) );
-
 	# Phase 3: We have 1 or 2 dates without BCs.
 	# We process them separately, so we can determine if they are ambiguous.
 
-	if ($offset{from} >= 0)
+	if ($offset{one} >= 0)
 	{
-		my($end) = $offset{to} >= 0 ? $offset{to} - 1 : $#field;
+		my($end) = $offset{two} >= 0 ? $offset{two} - 1 : $#field;
 
-		$self -> parse_1_date('first',  $flags, @field[($offset{from} + 1) .. $end]);
+		$self -> parse_1_date('one',  $flags, @field[($offset{one} + 1) .. $end]);
 	}
 
-	if ($offset{to} >= 0)
+	if ($offset{two} >= 0)
 	{
-		my($start) = $offset{to} >= 0 ? $offset{to} + 1 : 0;
+		my($start) = $offset{two} >= 0 ? $offset{two} + 1 : 0;
 
-		$self -> parse_1_date('second', $flags, @field[$start .. $#field]);
+		$self -> parse_1_date('two', $flags, @field[$start .. $#field]);
 	}
 
 } # End of parse_1or2_dates.
@@ -458,6 +452,8 @@ sub parse_1or2_dates
 sub parse_1_date
 {
 	my($self, $which, $flags, @field) = @_;
+
+	$self -> log("$which: " . join(', ', @field) );
 
 	# Phase 1: Flag an isolated year or a year with a month.
 
@@ -469,23 +465,23 @@ sub parse_1_date
 	{
 		# This assumes the year is the last and only input field.
 
-		#$$flags{"${which}_offset"} = $field[0] < 100 ? 1 : 0;
-		$field[2]                  = $field[0] + ( ($field[0] < 100) ? $self -> century : 0);
-		$field[1]                  = 1; # Month.
-		$field[0]                  = 1; # Day.
+		$field[2] = $field[0];
+		$field[1] = 1; # Month.
+		$field[0] = 1; # Day.
 	}
 	elsif ($#field == 1)
 	{
 		# This assumes the year is the last input field, and the month is first.
 
-		#$$flags{"${which}_offset"} = $field[1] < 100 ? 1 : 0;
-		$field[2]                  = $field[1] + ( ($field[1] < 100) ? $self -> century : 0);
-		$field[1]                  = $field[0]; # Month.
-		$field[0]                  = 1;         # Day.
+		$field[2] = $field[1];
+		$field[1] = $field[0]; # Month.
+		$field[0] = 1;         # Day.
 	}
-	else
+
+	if ($field[2] < 1000)
 	{
-		#$$flags{"${which}_offset"} = 0;
+		$field[2]                += 1000;
+		$$flags{"${which}_1000"} = 1;
 	}
 
 	$$flags{$which} = DateTime::Format::Natural -> new -> parse_datetime(join('-', @field) );
