@@ -331,9 +331,9 @@ sub parse_duration
 	for my $key (qw/one two/)
 	{
 		$flags{$key}               = $key eq 'one' ? DateTime::Infinite::Past -> new : DateTime::Infinite::Future -> new;
-		$flags{"${key}_1000"}      = 0;
 		$flags{"${key}_ambiguous"} = 0;
 		$flags{"${key}_bc"}        = 0;
+		$flags{"${key}_date"}      = $flags{$key};
 	}
 
 	$self -> parse_1or2_dates(\%flags, $from_to, @field);
@@ -348,12 +348,12 @@ sub parse_1or2_dates
 {
 	my($self, $flags, $from_to, @field) = @_;
 
-	# Phase 1: Check for embedded 'to'.
+	# Phase 1: Check for embedded 'to', as in 'from date.1 to date.2'.
 
 	my(%offset) =
 		(
 		 one => - 1,
-		 two  => - 1,
+		 two => - 1,
 		);
 
 	for my $i (0 .. $#field)
@@ -447,8 +447,6 @@ sub parse_1_date
 {
 	my($self, $which, $flags, @field) = @_;
 
-	$self -> log("$which: " . join(', ', @field) );
-
 	# Phase 1: Flag an isolated year or a year with a month.
 
 	$$flags{"${which}_ambiguous"} = $#field < 2 ? 1 : 0;
@@ -472,13 +470,24 @@ sub parse_1_date
 		$field[0] = 1;         # Day.
 	}
 
+	# Phase 3: Hand over analysis to our slave.
+
+	my($four_digit_year) = 1;
+
 	if ($field[2] < 1000)
 	{
-		$field[2]                += 1000;
-		$$flags{"${which}_1000"} = 1;
+		# DateTime only accepts 4-digit years :-(.
+
+		$field[2]        += 1000;
+		$four_digit_year = 0;
 	}
 
-	$$flags{$which} = DateTime::Format::Natural -> new -> parse_datetime(join('-', @field) );
+	$$flags{"${which}_date"} = DateTime::Format::Natural -> new -> parse_datetime(join('-', @field) );
+	$$flags{$which}          = qq|$$flags{"${which}_date"}|;
+
+	# Phase 4: Replace leading 1 with 0 if we rigged a 4-digit year.
+
+	substr($$flags{$which}, 0, 1) = '0' if (! $four_digit_year);
 
 } # End of parse_1_date.
 
