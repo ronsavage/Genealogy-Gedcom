@@ -528,9 +528,9 @@ Of course, the value for the 'two' key will I<not> have 1000 added it.
 This means that if the value of the 'two' key does not match the stringified value of the 'two_date' key
 (assuming the latter is not 'inf'), then the year is < 1000.
 
-Alternately, if the stringified value of the 'two_date' key is 'inf', the period supplied did not have a 'From' date.
+Alternately, if the stringified value of the 'two_date' key is 'inf', the period supplied did not have a 'To' date.
 
-Default: DateTime::Infinite::Furute -> new, which stringifies to 'inf'.
+Default: DateTime::Infinite::Future -> new, which stringifies to 'inf'.
 
 =back
 
@@ -554,7 +554,7 @@ Then the returned hashref will have:
 
 =back
 
-Clearly, the code I<does not> reorder the dates.
+Clearly then, the code I<does not> reorder the dates.
 
 =head1 Machine-Readable Change Log
 
