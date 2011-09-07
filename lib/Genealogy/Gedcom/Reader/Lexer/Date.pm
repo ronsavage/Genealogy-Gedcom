@@ -268,6 +268,10 @@ sub parse_1_date
 
 	substr($$flags{$which}, 0, 1) = '0' if (! $four_digit_year);
 
+	# Phase 5: Check is the day is <= 12, in which case it could be a month.
+
+	$$flags{"${which}_ambiguous"} = 1 if (substr($$flags{$which}, 8, 2) <= '12');
+
 } # End of parse_1_date.
 
 # --------------------------------------------------

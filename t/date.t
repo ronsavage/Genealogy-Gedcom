@@ -51,25 +51,25 @@ en_AU =>
 		two_bc        => 0,
 		two_date      => DateTime -> new(year => 1099),
 		},
-		'From 1 Jan 2001 to 2 Feb 2002' =>
+		'From 1 Jan 2001 to 25 Dec 2002' =>
 		{
 		one           => DateTime -> new(year => 2001, month => 1, day => 1),
-		one_ambiguous => 0,
+		one_ambiguous => 1,
 		one_bc        => 0,
-		one_date      => DateTime -> new(year => 2001, month => 1, day => 1),
-		two           => DateTime -> new(year => 2002, month => 2, day => 2),
+		one_date      => DateTime -> new(year => 2001, month => 1,  day => 1),
+		two           => DateTime -> new(year => 2002, month => 12, day => 25),
 		two_ambiguous => 0,
 		two_bc        => 0,
-		two_date      => DateTime -> new(year => 2002, month => 2, day => 2),
+		two_date      => DateTime -> new(year => 2002, month => 12, day => 25),
 		},
-		'From 2 Feb 2002 to 1 Jan 2001' => # A retrograde example.
+		'From 25 Dec 2002 to 1 Jan 2001' => # A retrograde example.
 		{
-		one           => DateTime -> new(year => 2002, month => 2, day => 2),
+		one           => DateTime -> new(year => 2002, month => 12, day => 25),
 		one_ambiguous => 0,
 		one_bc        => 0,
-		one_date      => DateTime -> new(year => 2002, month => 2, day => 2),
+		one_date      => DateTime -> new(year => 2002, month => 12, day => 25),
 		two           => DateTime -> new(year => 2001, month => 1, day => 1),
-		two_ambiguous => 0,
+		two_ambiguous => 1,
 		two_bc        => 0,
 		two_date      => DateTime -> new(year => 2001, month => 1, day => 1),
 		},
@@ -153,7 +153,7 @@ en_AU =>
 		'From @#DGREGORIAN@ 1 Jan 2000' =>
 		{
 		one           => DateTime -> new(year => 2000, month => 1, day => 1),
-		one_ambiguous => 0,
+		one_ambiguous => 1,
 		one_bc        => 0,
 		one_date      => DateTime -> new(year => 2000),
 		two           => DateTime::Infinite::Future -> new,
