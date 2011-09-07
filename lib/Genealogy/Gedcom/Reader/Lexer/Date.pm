@@ -460,6 +460,9 @@ This is checked for by testing whether or not the day is <= 12, since in that ca
 
 =back
 
+Obviously, the 'one_ambiguous' flag can be set for a date specified in a non-ambiguous way, e.g. 'From 1 Jan 2000',
+since the numeric value of the month is 1 and the day is also 1.
+
 Default: 0.
 
 =item o one_bc => $Boolean
@@ -511,6 +514,9 @@ Returns 1 if the second (or only) date is ambiguous. Possibilities:
 This is checked for by testing whether or not the day is <= 12, since in that case it could be a month.
 
 =back
+
+Obviously, the 'two_ambiguous' flag can be set for a date specified in a non-ambiguous way, e.g. 'To 1 Jan 2000',
+since the numeric value of the month is 1 and the day is also 1.
 
 Default: 0.
 
