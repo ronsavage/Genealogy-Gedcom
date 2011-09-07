@@ -11,11 +11,9 @@ use Hash::FieldHash ':all';
 
 use Text::Abbrev; # For abbrev.
 
-fieldhash my %century   => 'century';
-fieldhash my %debug     => 'debug';
-fieldhash my %from_to   => 'from_to';
-fieldhash my %locale    => 'locale';
-fieldhash my %period    => 'period';
+fieldhash my %debug   => 'debug';
+fieldhash my %from_to => 'from_to';
+fieldhash my %period  => 'period';
 
 our $VERSION = '0.80';
 
@@ -24,10 +22,8 @@ our $VERSION = '0.80';
 sub _init
 {
 	my($self, $arg)  = @_;
-	$$arg{century}   ||= '1900';        # Caller can set.
 	$$arg{debug}     ||= 0;             # Caller can set.
 	$$arg{from_to}   ||= [qw/from to/]; # Caller can set.
-	$$arg{locale}    ||= 'en_AU';       # Caller can set.
 	$$arg{period}    ||= '';            # Caller can set.
 	$self            = from_hash($self, $arg);
 
@@ -56,223 +52,6 @@ sub new
 	return $self;
 
 }	# End of new.
-
-# --------------------------------------------------
-
-sub _parse_date
-{
-	my($self, $date, @field) = @_;
-
-	# Phase 1: Change 'and' to 'to' to keep DateTime::Format::Natural happy.
-
-	my($offset_of_to) = - 1;
-
-	for my $i (0 .. $#field)
-	{
-		if ($field[$i] eq 'and')
-		{
-			$$date{infix} = 'and';
-			$field[$i]    = 'to';
-			$offset_of_to = $i;
-		}
-		elsif ($field[$i] eq 'to')
-		{	
-			$$date{infix} = 'to';
-			$offset_of_to = $i;
-		}
-	}
-
-	# Phase 2: Search for 'BC', of which there might be 2.
-
-	my(@offset_of_bc);
-
-	for my $i (0 .. $#field)
-	{
-		# Note: The field might contain just 'BC' or something like '500BC'.
-
-		if ($field[$i] =~ /^(\d*)b\.?c\.?$/)
-		{
-			# Remove 'BC'. Allow for year 0 with defined().
-
-			if (defined($1) && $1)
-			{
-				$field[$i] = $1 + 1000;
-			}
-			else
-			{
-				# Save offsets so we can remove 'BC' later.
-
-				push @offset_of_bc, $i;
-
-				# Add 1000 if BC year < 1000, to keep DateTime happy.
-				# This assumes the 'BC' immediately follows the year.
-
-				if ($i > 0)
-				{
-					$field[$i - 1] += $field[$i - 1] < 1000 ? 1000 : 0;
-				}
-			}
-
-			# Flag which date is BC.
-
-			if ( ($offset_of_to < 0) || ($i < $offset_of_to) )
-			{
-				$$date{first_bc} = 1;
-			}
-			else
-			{
-				$$date{last_bc} = 1;
-			}
-		}
-	}
-
-	# Clean up if there is there a 'BC' or 2.
-
-	if ($#offset_of_bc >= 0)
-	{
-		splice(@field, $offset_of_bc[0], 1);
-
-		# Is there another 'BC'?
-
-		if ($#offset_of_bc > 0)
-		{
-			# We use - 1 because of the above splice.
-
-			splice(@field, $offset_of_bc[1] - 1, 1);
-		}
-	}
-
-	# Phase 3: We have 1 or 2 dates without BCs.
-	# We process them separately, so we can determine if they are ambiguous.
-
-	if ($offset_of_to >= 0)
-	{
-		# We have a 'to', which may be the only date present.
-
-		$self -> parse_date_field('one', $date, @field[0 .. ($offset_of_to - 1)]);
-		$self -> parse_date_field('two',  $date, @field[($offset_of_to + 1) .. $#field]);
-	}
-	else
-	{
-		$self -> _parse_date_field('one', $date, @field);
-	}
-
-} # End of _parse_date.
-
-# --------------------------------------------------
-
-sub _parse_date_field
-{
-	my($self, $which, $date, @field) = @_;
-
-	# Phase 1: Handle an isolated year or a year with a month.
-
-	if ($#field < 2)
-	{
-		$$date{"${which}_ambiguous"} = 1;
-	}
-
-	# Phase 2: Handle missing data and 2-digit years.
-
-	if ($#field == 0)
-	{
-		# This assumes the year is the last and only input field.
-
-		$field[2] = $field[0] + ( ($field[0] < 100) ? $self -> century : 0);
-		$field[1] = 1; # Month.
-		$field[0] = 1; # Day.
-	}
-	elsif ($#field == 1)
-	{
-		# This assumes the year is the last input field, and the month is first.
-
-		$field[2] = $field[1] + ( ($field[1] < 100) ? $self -> century : 0);
-		$field[1] = $field[0]; # Month.
-		$field[0] = 1;         # Day.
-	}
-
-	$$date{$which} = DateTime::Format::Natural -> new -> parse_datetime(join('-', @field) );
-
-} # End of _parse_date_field.
-
-# --------------------------------------------------
-
-sub parse_datetime
-{
-	my($self, %arg) = @_;
-	my($period)     = lc ($arg{period} || $self -> period);
-	$period         =~ s/^\s+//; # Just in case...
-	$period         =~ s/\s+$//;
-
-	die "No value supplied for the 'period' key" if (length($period) == 0);
-
-	$self -> century($arg{century}) if ($arg{century});
-	$self -> locale($arg{locale})   if ($arg{locale});
-
-	# Phase 1: Handle interpreted case, i.e. /...(...)/.
-
-	my(%date) =
-		(
-		 century         => $self -> century,
-		 escape          => 'dgregorian',
-		 first           => DateTime::Infinite::Past -> new,
-		 first_ambiguous => 0,
-		 first_bc        => 0,
-		 infix           => '',
-		 last            => DateTime::Infinite::Future -> new,
-		 last_ambiguous  => 0,
-		 last_bc         => 0,
-		 locale          => $self -> locale,
-		 phrase          => '',
-		 prefix          => '',
-		);
-
-	if ($period =~ /^(.*)\((.*)\)/)
-	{
-		$period       = $1 || '';
-		$date{phrase} = $2 || ''; # Allow for '... ()'.
-	}
-
-	return {%date} if (length($period) == 0);
-
-	# Phase 2: Handle leading word or abbreviation.
-	# Note: This hash deliberately includes words from ranges, as documentation,
-	# even though ranges are checked separately below.
-
-	my(%abbrev) =
-		(
-		 en_AU => {abbrev (qw/about abt and after before between calculated estimated from  interpreted to/)},
-		 nl_NL => {abbrev (qw/rond      en  na    voor   tussen  calculated estimated vanaf interpreted tot/)},
-		);
-
-	# Split the date on '-' or spaces.
-
-	my(@field) = split(/[-\s]+/, $period);
-
-	if ($abbrev{$self -> locale}{$field[0]})
-	{
-		$date{prefix} = $abbrev{$self -> locale}{$field[0]};
-		$date{prefix} = 'about' if ($date{prefix} eq 'abt'); # Sigh.
-
-		shift @field;
-	}
-
-	# Phase 3: Handle the date escape.
-
-	if ($field[0] =~ /@#(.+)@/)
-	{
-		$date{escape} = $1;
-
-		shift @field;
-	}
-
-	# Phase 4: Handle the date(s).
-
-	$self -> _parse_date(\%date, @field);
-
-	return {%date};
-
-} # End of parse_datetime.
 
 # --------------------------------------------------
 
@@ -503,15 +282,25 @@ L<Genealogy::Gedcom::Reader::Lexer::Date> - An OS-independent lexer for GEDCOM d
 
 =head1 Synopsis
 
-	my($locale) = 'en_AU';
-	my($parser) = Genealogy::Gedcom::Reader::Lexer::Date -> new
-	(
-	locale => $locale,
-	logger => '',
-	);
+	my($parser) = Genealogy::Gedcom::Reader::Lexer::Date -> new;
 
-	my($candidate)    = 'Bet 4 Apr 2004 and 5 May 2005';
-	my($date_hashref) = $parser -> parse($candidate);
+	or, in debug mode, which might print progress reports:
+
+	my($parser) = Genealogy::Gedcom::Reader::Lexer::Date -> new(debug => 1);
+
+	# These samples are some cases from t/date.t.
+
+	for my $period (
+	'From 0 to 99',
+	'From 1 Jan 2001 to 2 Feb 2002',
+	'From 21 Jun 6004BC.',
+	'From 500BC to 400',
+	'To 2011',
+	'To 500 BC'
+	)
+	{
+		my($hashref) = $parser -> parse_duration(period => $period);
+	}
 
 =head1 Description
 
@@ -551,189 +340,197 @@ C<new()> is called as C<< my($date) = Genealogy::Gedcom::Reader::Lexer::Date -> 
 
 It returns a new object of type C<Genealogy::Gedcom::Reader::Lexer::Date>.
 
-Key-value pairs accepted in the parameter list (see corresponding methods for details [e.g. candidate()]):
+Key-value pairs accepted in the parameter list (see corresponding methods for details [e.g. debug()]):
 
 =over 4
 
-=item o candidate => $a_string
+=item o debug => $Boolean
 
-A string which the code tries to parse as a GEDCOM date of some sort.
+Turn debugging prints off or on.
+
+Default: 0.
+
+This parameter is optional.
+
+=item o from_to => $arrayref
+
+Specify the case-insensitive words, in your language, which indicate a date duration.
+
+Default: ['From', 'To'] I<in that order>.
+
+This parameter is optional. If supplied, it must be a 2-element arrayref. It can be supplied to new() or to L<parse_duration([%arg])>.
+
+=item o period => $a_string
+
+The string to be parsed. It may contain just 1 date, prefixed with (in English) 'From' or 'To'.
 
 Default: ''.
 
-=item o century => $an_integer
-
-An integer which specifies what to do with 2 digit dates.
-
-This means '29 Feb 00', with the default century of 1900, is interpreted as 29-02-1900.
-
-Default: 1900.
-
-=item o locale => $a_locale
-
-A string which specifies the desired locale.
-
-Default: 'en_AU'.
-
-=item o logger => $logger_object
-
-Specify a logger object.
-
-To disable logging, just set logger to the empty string.
-
-Default: An object of type L<Log::Handler>.
+This parameter is optional. It can be supplied to new() or to L<parse_duration([%arg])>.
 
 =back
 
 =head1 Methods
 
-=head2 candidate([$a_string])
+=head2 debug([$Boolean])
 
 The [] indicate an optional parameter.
 
-Get or set the string being parsed.
+Get or set the debug flag.
 
-=head2 century([$an_integer])
+=head2 from_to([$arrayref])
 
 The [] indicate an optional parameter.
 
-Get or set the value of the default century.
+Get or set the arrayref of words, in your language, for 'From' and 'To' I<in that order>.
 
-=head2 log($level, $s)
+=head2 log($s)
 
-Calls $self -> logger -> $level($s).
+Print the string "#\t$s. \n" to STDERR.
 
-=head2 locale([$locale])
+The '#' co-operates with L<Test::More>.
 
-Here, the [] indicate an optional parameter.
-
-Get or set the locale.
-
-=head2 logger([$logger_object])
+=head2 parse_duration([%arg])
 
 Here, the [] indicate an optional parameter.
 
-Get or set the logger object.
+Parse the period and return a hashref.
 
-To disable logging, just set logger to the empty string.
+Key => value pairs for %arg:
 
-=head2 parse([%arg])
+=over 4
 
-Here, the [] indicate an optional parameter.
+=item o from_to => $arrayref
 
-Parse the candidate and return a hashref.
+Specify the case-insensitive words, in your language, which indicate a date duration.
 
-$arg{candidate}: The candidate date can be passed in to new as new(candidate => $a_string), or into parse as parse(candidate => $a_string).
+This parameter is optional. If supplied, it must be a 2-element arrayref.
 
-$arg{candidate} => $candidate takes precedence over new(candidate => $candidate).
+$arg{from_to}: The 'From' and 'To' strings can be passed in to new as new(from_to => $arrayref), or into this method as parse_duration(from_to => $arrayref).
+
+parse_duration(from_to => $arrayref) takes precedence over new(from_to => $arrayref).
+
+=item o period => $a_string
+
+Specify the string to parse.
+
+This parameter is optional.
+
+$arg{period}: The candidate duration can be passed in to new as new(period => $a_string), or into this method as parse_duration(period => $a_string).
+
+parse_duration(period => $period) takes precedence over new(period => $period).
 
 This string is always converted to lower case before being processed.
 
-In fact I<all> result data is lower case.
-
-$arg{century}: The century can be passed in to new as new(century => $a_number), or into parse as parse(century => $a_number).
-
-$arg{century} => $a_number takes precedence over new(century => $number).
-
-$arg{locale}: The locale can be passed in to new as new(locale => $a_string), or into parse as parse(locale => $a_string).
-
-$arg{locale} => $locale takes precedence over new(locale => $locale).
+=back
 
 The return value is a hashref with these key => value pairs:
 
 =over 4
 
-=item o first => $first_date_in_range
+=item o one => $first_date_in_range
 
-Returns the first (or only) date as a L<DateTime> object.
+Returns the first (or only) date as a string, after 'From'.
 
-This is for cases like '1999' in 'about 1999', and for '1999' in 'Between 1999 and 2000', and '2001' in 'From 2001 to 2002'.
+This is for cases like '1999' in 'from 1999', and for '1999' in 'from 1999 to 2000'.
 
 A missing month defaults to 01. A missing day defaults to 01.
 
-'500BC' will be returned as '500-01-01', with the 'bc' flag set.
+'500BC' will be returned as '0500-01-01', with the 'one_bc' flag set. See also the key 'one_date'.
 
-Default: DateTime::Infinite::Past -> new.
+Default: DateTime::Infinite::Past -> new, which stringifies to '-inf'.
 
-=item o first_ambiguous => $Boolean
+=item o one_ambiguous => $Boolean
 
 Returns 1 if the first (or only) date is ambiguous. Possibilities:
 
 =over 4
 
-=item o The year is only 2 digits
+=item o Only the year is present
 
-=item o The month and day are reversible
+=item o Only the year and month are present
+
+=item o The day and month are reversible
+
+This is checked for by testing whether or not the day is <= 12, since in that case it could be a month.
 
 =back
 
 Default: 0.
 
-=item o first_bc => $Boolean
+=item o one_bc => $Boolean
 
-Returns 1 if the first date is followed by one of: 'B.C.', 'BC.' or 'BC'.
+Returns 1 if the first date is followed by one of (case-insensitive): 'B.C.', 'BC.' or 'BC'.
 
-In the input, this suffix can be separated from the year by spaces.
-
-Warning: If this flag is set, the year has 1000 added to it, because L<DateTime> can't handle 1, 2 or 3 digit years.
-
-That means, 500BC is 1500 with the flag set, and 2222BC is 3222 with the flag set.
+In the input, this suffix can be separated from the year by spaces, so both '500BC' and '500 B.C.' are accepted.
 
 Default: 0.
 
-=item o infix => $a_string
+=item o one_date => $a_date_object
 
-This is for cases like 'and' in 'Between 1999 and 2000', and 'to' in 'From 2001 to 2002'.
+This object is of type L<DateTime::Format::Natural>, which will actually be an object of type L<DateTime>.
 
-Default: ''.
+Warning: Since these objects only accept 4-digit years, any year 0 .. 999 will have 1000 added to it.
+Of course, the value for the 'one' key will I<not> have 1000 added it.
 
-=item o last => $last_date_in_range
+This means that if the value of the 'one' key does not match the stringified value of the 'one_date' key
+(assuming the latter is not '-inf'), then the year is < 1000.
 
-Returns the second of 2 dates as a L<DateTime> object.
+Alternately, if the stringified value of the 'one_date' key is '-inf', the period supplied did not have a 'From' date.
 
-This is for cases like '2000' in 'Between 1999 and 2000', and '2002' in 'From 2001 to 2002'.
+Default: DateTime::Infinite::Past -> new, which stringifies to '-inf'.
+
+=item o two => $second_date_in_range
+
+Returns the second (or only) date as a string, after 'To'.
+
+This is for cases like '1999' in 'to 1999', and for '2000' in 'from 1999 to 2000'.
 
 A missing month defaults to 01. A missing day defaults to 01.
 
-Default: DateTime::Infinite::Future -> new.
+'500BC' will be returned as '0500-01-01', with the 'two_bc' flag set. See also the key 'two_date'.
 
-=item o last_ambiguous => $Boolean
+Default: DateTime::Infinite::Future -> new, which stringifies to 'inf'.
 
-Returns 1 if the last date is ambiguous.
+=item o two_ambiguous => $Boolean
 
-See first_ambiguous for situations where this flag is set.
+Returns 1 if the second (or only) date is ambiguous. Possibilities:
+
+=over 4
+
+=item o Only the year is present
+
+=item o Only the year and month are present
+
+=item o The day and month are reversible
+
+This is checked for by testing whether or not the day is <= 12, since in that case it could be a month.
+
+=back
 
 Default: 0.
 
-=item o last_bc => $Boolean
+=item o two_bc => $Boolean
 
-Returns 1 if the second date is followed by one of: 'B.C.', 'BC.' or 'BC'.
+Returns 1 if the second date is followed by one of (case-insensitive): 'B.C.', 'BC.' or 'BC'.
 
-In the input, this suffix can be separated from the year by spaces.
-
-Warning: If this flag is set, the year has 1000 added to it, because L<DateTime> can't handle 1, 2 or 3 digit years.
-
-That means, 500BC is 1500 with the flag set, and 2222BC is 3222 with the flag set.
+In the input, this suffix can be separated from the year by spaces, so both '500BC' and '500 B.C.' are accepted.
 
 Default: 0.
 
-=item o locale => $the_user_supplied_locale
+=item o two_date => $a_date_object
 
-Default: The locale supplied to new() or to parse().
+This object is of type L<DateTime::Format::Natural>, which will actually be an object of type L<DateTime>.
 
-=item o phrase => $the_phrase
+Warning: Since these objects only accept 4-digit years, any year 0 .. 999 will have 1000 added to it.
+Of course, the value for the 'two' key will I<not> have 1000 added it.
 
-This is for cases like '(Unsure about the date)' or 'Approx' in '1999 (Approx)'.
+This means that if the value of the 'two' key does not match the stringified value of the 'two_date' key
+(assuming the latter is not 'inf'), then the year is < 1000.
 
-The () are discarded.
+Alternately, if the stringified value of the 'two_date' key is 'inf', the period supplied did not have a 'From' date.
 
-Default: ''.
-
-=item o prefix => $the_prefix
-
-This is for cases like 'about' in 'About 1999'.
-
-Default: ''.
+Default: DateTime::Infinite::Furute -> new, which stringifies to 'inf'.
 
 =back
 
@@ -744,6 +541,20 @@ Default: ''.
 Because such objects have the sophistication required to handle such a complex topic.
 
 See L<DateTime> and L<http://datetime.perl.org/wiki/datetime/dashboard> for details.
+
+=head2 What happens if parse_duration() is given a string like 'From 2000 to 1999'
+
+Then the returned hashref will have:
+
+=over 4
+
+=item o one => '2000-01-01T00:00:00'
+
+=item o two => '1999-01-01T00:00:00'
+
+=back
+
+Clearly, the code I<does not> reorder the dates.
 
 =head1 Machine-Readable Change Log
 
