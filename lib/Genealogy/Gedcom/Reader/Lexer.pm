@@ -3664,11 +3664,11 @@ Run scripts/lex.pl -help.
 
 A typical run would be:
 
-perl -Ilib scripts/lex.pl -i data/royal.ged -report_items 1 -strict 1
+perl -Ilib scripts/lex.pl -i data/royal.ged -r 1 -s 1
 
-Turn on debugging (extra logging) with:
+Turn on debugging prints with:
 
-perl -Ilib scripts/lex.pl -i data/royal.ged -report_items 1 -strict 1 -max debug
+perl -Ilib scripts/lex.pl -i data/royal.ged -r 1 -s 1 -max debug
 
 royal.ged was downloaded from L<http://www.vjet.f2s.com/ftree/download.html>. It's more up-to-date than the one shipped with L<Gedcom>.
 
@@ -4094,10 +4094,6 @@ Details:
 Xrefs (pointers) are checked that they point to an xref which exists. Each dangling xref is only reported once.
 
 =item o Dates are validated
-
-L<Genealogy::Gedcom::Reader::Lexer::Date>.parse() returns a hashref with the 'error' key pointing to either 0 for no error or 1 for an error.
-
-In the case of a date range, either the first or second date being in error can set this flag.
 
 =item o Duplicate xrefs
 
