@@ -37,10 +37,10 @@
 0 @I2@ INDI
 1   NAME Given Name /Surname/
 1   BIRT
-2     DATE 01-01-2000
+2     DATE 21 Jun 2011
 2     AGE 0
 1   BIRT
-2     DATE 02-01-2000
+2     DATE 21 Jun 2011
 1   RIN 83
 2     _TFF Six
 1   _TGG Seven

@@ -17,11 +17,13 @@ Module::Build -> new
  },
  requires =>
  {
-	 Getopt::Long    => 2.38,
-	 Hash::FieldHash => 0.10,
-	 Log::Handler    => 0.71,
-	 Perl6::Slurp    => 0.03,
-	 Pod::Usage      => 1.36,
-	 Set::Array      => 0.23,
+	 DateTime                 => 0.70,
+	 DateTime::Format::Gedcom => 1.01,
+	 Getopt::Long             => 2.38,
+	 Hash::FieldHash          => 0.10,
+	 Log::Handler             => 0.71,
+	 Perl6::Slurp             => 0.03,
+	 Pod::Usage               => 1.36,
+	 Set::Array               => 0.23,
  },
 ) -> create_build_script();
