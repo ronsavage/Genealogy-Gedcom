@@ -19,6 +19,7 @@ Module::Build -> new
  {
 	 DateTime                 => 0.70,
 	 DateTime::Format::Gedcom => 1.01,
+	 DateTime::Infinite       => 0.70,
 	 Getopt::Long             => 2.38,
 	 Hash::FieldHash          => 0.10,
 	 Log::Handler             => 0.71,
