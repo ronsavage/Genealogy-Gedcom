@@ -32,10 +32,10 @@ sub process
 
 # ------------------------------------------------
 
+process('data/royal.ged',  3668);
 process('data/sample.1.ged', 29);
 process('data/sample.2.ged', 45);
 process('data/sample.3.ged', 87);
 process('data/sample.4.ged', 51);
-process('data/royal.ged',  3668);
 
 done_testing;
