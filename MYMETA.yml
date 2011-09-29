@@ -25,6 +25,9 @@ provides:
     file: lib/Genealogy/Gedcom/Reader/Lexer.pm
     version: 0.80
 requires:
+  DateTime: 0.7
+  DateTime::Infinite: 0.7
+  Genealogy::Gedcom::Date: 1
   Getopt::Long: 2.38
   Hash::FieldHash: 0.1
   Log::Handler: 0.71

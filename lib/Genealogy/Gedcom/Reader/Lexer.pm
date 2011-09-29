@@ -27,7 +27,7 @@ fieldhash my %report_items => 'report_items';
 fieldhash my %result       => 'result';
 fieldhash my %strict       => 'strict';
 
-our $VERSION = '0.80';
+our $VERSION = '0.81';
 
 # --------------------------------------------------
 
@@ -4215,6 +4215,20 @@ By sub-classing.
 ASCII - i.e. nothing else has been tested.
 
 The code should really ought to support ANSEL (a superset of ASCII), ASCII, UTF-8 and UTF-16 (known to GEDCOM as UNICODE).
+
+=head1 TODO
+
+=over 4
+
+=item o Test input file for binary
+
+=item o Test input file for non-ASCII character sets
+
+=item o Test input file for size 0
+
+=item o Tighten validation
+
+=back
 
 =head1 Machine-Readable Change Log
 
