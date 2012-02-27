@@ -5,7 +5,7 @@ use warnings;
 
 use DateTime;
 
-use DateTime::Format::Gedcom;
+use Genealogy::Gedcom::Date;
 
 use Hash::FieldHash ':all';
 
@@ -27,7 +27,7 @@ fieldhash my %report_items => 'report_items';
 fieldhash my %result       => 'result';
 fieldhash my %strict       => 'strict';
 
-our $VERSION = '0.81';
+our $VERSION = '0.82';
 
 # --------------------------------------------------
 
@@ -41,7 +41,7 @@ sub check_date
 	}
 	else
 	{
-		my($date) = DateTime::Format::Gedcom -> new -> parse_date_value(date => $$line[4]);
+		my($date) = Genealogy::Gedcom::Date -> new -> parse_date_value(date => $$line[4]);
 
 		$self -> log(debug => "$id: $date");
 		$self -> push_item($line, 'Date');
@@ -61,7 +61,7 @@ sub check_date_period
 	}
 	else
 	{
-		my($date) = DateTime::Format::Gedcom -> new -> parse_date_period(date => $$line[4]);
+		my($date) = Genealogy::Gedcom::Date -> new -> parse_date_period(date => $$line[4]);
 
 		$self -> log(debug => "$id: $date");
 		$self -> push_item($line, 'Date');
@@ -81,7 +81,7 @@ sub check_exact_date
 	}
 	else
 	{
-		my($date) = DateTime::Format::Gedcom -> new -> parse_datetime($$line[4]);
+		my($date) = Genealogy::Gedcom::Date -> new -> parse_datetime($$line[4]);
 
 		# This is commented out because log has already been called by the caller.
 

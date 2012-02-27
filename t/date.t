@@ -6,15 +6,15 @@ use DateTime::Infinite;
 
 use Test::More;
 
-BEGIN {use_ok('DateTime::Format::Gedcom');}
+BEGIN {use_ok('Genealogy::Gedcom::Date');}
 
 my($locale) = 'en_AU';
 
 DateTime -> DefaultLocale($locale);
 
-my($parser) = DateTime::Format::Gedcom -> new(debug => 0);
+my($parser) = Genealogy::Gedcom::Date -> new(debug => 0);
 
-isa_ok($parser, 'DateTime::Format::Gedcom');
+isa_ok($parser, 'Genealogy::Gedcom::Date');
 
 my($date);
 my($in_string);
@@ -34,12 +34,16 @@ en_AU =>
 		one_ambiguous => 0,
 		one_bc        => 0,
 		one_date      => DateTime -> new(year => 1954, month => 7, day => 15),
+		one_default_day   => 0,
+		one_default_month => 0,
 		phrase        => '',
 		prefix        => '',
 		two           => DateTime::Infinite::Future -> new,
 		two_ambiguous => 0,
 		two_bc        => 0,
 		two_date      => DateTime::Infinite::Future -> new,
+		two_default_day   => 0,
+		two_default_month => 0,
 		},
 }
 );
