@@ -13,13 +13,13 @@
 3       COPR Copyright 2011, Ron Savage
 3       DATE 21 Jun 2011
 1   NOTE
-2     CONT This file is based from test data in Paul Johnson's Gedcom.pm
+2     CONT This file is based on test data in Paul Johnson's Gedcom.pm
 2     CONT Gedcom.pm is Copyright 1999-2009, Paul Johnson (paul@pjcj.net)
 2     CONT Version 1.16 - 24th April 2009
 2     CONT
 2     CONT Ron's modules under the Genealogy::Gedcom namespace are free
 2     CONT
-2     CONT The latest versions of these modules is available from
+2     CONT The latest versions of these modules are available from
 2     CONT my homepage http://savage.net.au and http://metacpan.org
 1   GEDC
 2     VERS 5.5.1-5
@@ -48,7 +48,7 @@
 2     CONT Line 2
 2     CONT Lin
 2     CONC e 3
-2     CONT Line 
+2     CONT Line
 2     CONC 4
 
 0 TRLR

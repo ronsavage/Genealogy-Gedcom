@@ -163,7 +163,7 @@ sub cross_check_xrefs
 	{
 		next if ($seen{$$link[0]});
 
-		$self -> log(warning => "Line $$link[1]. Link $$link[0] does not point to an existing xref") if (! $target{$$link[0]}); 
+		$self -> log(warning => "Line $$link[1]. Link $$link[0] does not point to an existing xref") if (! $target{$$link[0]});
 
 		$seen{$$link[0]} = 1;
 	}
@@ -376,7 +376,7 @@ sub _init
 	$$arg{minlevel}     ||= 'error'; # Caller can set.
 	$$arg{report_items} ||= 0;       # Caller can set.
 	$$arg{result}       = 0;
-	$$arg{strict}       ||= $$arg{strict} =~ /^[01]$/ ? $$arg{strict} : 0;  # Caller can set.
+	$$arg{strict}       ||= $$arg{strict} && $$arg{strict} =~ /^[01]$/ ? $$arg{strict} : 0;  # Caller can set.
 	$self               = from_hash($self, $arg);
 
 	if (! $user_logger)
