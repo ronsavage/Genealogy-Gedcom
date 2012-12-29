@@ -3,7 +3,7 @@ use Module::Build;
 Module::Build -> new
 (
  module_name    => 'Genealogy::Gedcom',
- license        => 'perl_5',
+ license        => 'artistic_2',
  dist_abstract  => 'An OS-independent processor for GEDCOM data',
  dist_author    => 'Ron Savage <ron@savage.net.au>',
  build_requires =>

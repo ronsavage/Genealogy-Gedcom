@@ -21,7 +21,7 @@ WriteMakefile
  },
  DISTNAME  => 'Genealogy-Gedcom',
  NAME      => 'Genealogy::Gedcom',
-	LICENSE   => 'perl_5',
+	LICENSE   => 'artistic_2',
  PL_FILES  => {},
  PREREQ_PM =>
  {
