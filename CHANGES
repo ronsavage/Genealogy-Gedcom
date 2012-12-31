@@ -1,15 +1,18 @@
 Revision history for Perl extension Genealogy::Gedcom.
 
+0.83  Unreleased
+	- Remove the HTML templates called rainbow*, because they were never used.
+
 0.82  Mon Feb 27 13:33:00 2012
-	  The switch in V 0.81 from DateTime::Format::Gedcom to Genealogy::Gedcom::Date omitted some edits in t/*.t.
+	- The switch in V 0.81 from DateTime::Format::Gedcom to Genealogy::Gedcom::Date omitted some edits in t/*.t.
 
 0.81  Thu Sep 29 14:48:00 2011
-	  - Switch pre-req from DateTime::Format::Gedcom V 1.01 to Genealogy::Gedcom::Date V 1.00.
-	  - Update UUID proposal with use case.
-	  - Rename UUID proposal from docs/uuid.txt to docs/uuid.proposal.pod, and add docs/uuid.proposal.html.
-	  - Remove obsolete docs/rationale.*.
-	  - In the array of hashrefs recording lex results, the type field can now be 'Date' or 'Invalid date'.
-	  	'Date' means it was successfully parsed, and 'Invalid date' means it could not be parsed.
+	- Switch pre-req from DateTime::Format::Gedcom V 1.01 to Genealogy::Gedcom::Date V 1.00.
+	- Update UUID proposal with use case.
+	- Rename UUID proposal from docs/uuid.txt to docs/uuid.proposal.pod, and add docs/uuid.proposal.html.
+	- Remove obsolete docs/rationale.*.
+	- In the array of hashrefs recording lex results, the type field can now be 'Date' or 'Invalid date'.
+		'Date' means it was successfully parsed, and 'Invalid date' means it could not be parsed.
 
 0.80  Mon Aug 29 12:00:00 2011
-	  - Initial release.
+	- Initial release.
