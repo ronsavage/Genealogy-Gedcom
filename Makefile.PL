@@ -34,7 +34,7 @@ WriteMakefile
 	 Perl6::Slurp            => 0.03,
 	 Pod::Usage              => 1.36,
 	 Set::Array              => 0.23,
-	 Test::Simple            => 0.94,
+	 Test::More            => 0.94,
 	 Test::Pod               => 1.45,
  },
  VERSION_FROM => 'lib/Genealogy/Gedcom.pm',
