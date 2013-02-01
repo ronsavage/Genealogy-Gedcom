@@ -35,7 +35,7 @@ WriteMakefile
 	 Pod::Usage              => 1.36,
 	 Set::Array              => 0.23,
 	 Test::More            => 0.94,
-	 Test::Pod               => 1.45,
+#	 Test::Pod               => 1.45, # Make it optional. See t/pod.t
  },
  VERSION_FROM => 'lib/Genealogy/Gedcom.pm',
 );
