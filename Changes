@@ -1,5 +1,9 @@
 Revision history for Perl extension Genealogy::Gedcom.
 
+0.84  Unreleased
+	- Add data/sample.6.ged to match data/sample.5.ged, to cover the 2 case of dates within the header.
+		One case (sample.5.ged) allows a TIME, and the other does not.
+
 0.83  Wed Jun 26 10:56:00 2013
 	- Rename CHANGES to Changes as per CPAN::Changes::SPEC.
 	- Remove the HTML templates called rainbow*, because they were never used.
