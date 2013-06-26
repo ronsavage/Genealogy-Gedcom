@@ -3,7 +3,7 @@ package Genealogy::Gedcom;
 use strict;
 use warnings;
 
-our $VERSION = '0.82';
+our $VERSION = '0.83';
 
 # --------------------------------------------------
 

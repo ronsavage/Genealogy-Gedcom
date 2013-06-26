@@ -3,7 +3,7 @@ abstract: 'An OS-independent processor for GEDCOM data'
 author:
   - 'Ron Savage <ron@savage.net.au>'
 build_requires:
-  Test::More: 0.94
+  Test::More: 0.98
 configure_requires:
   Module::Build: 0.38
 dynamic_config: 0
@@ -24,15 +24,17 @@ provides:
     file: lib/Genealogy/Gedcom/Reader/Lexer.pm
     version: 0.82
 requires:
-  DateTime: 0.7
-  DateTime::Infinite: 0.7
-  Genealogy::Gedcom::Date: 1
+  DateTime: 1.03
+  DateTime::Infinite: 1.03
+  Genealogy::Gedcom::Date: 1.08
   Getopt::Long: 2.38
-  Hash::FieldHash: 0.1
-  Log::Handler: 0.71
-  Perl6::Slurp: 0.03
+  Hash::FieldHash: 0.14
+  Log::Handler: 0.78
+  Perl6::Slurp: 0.051003
   Pod::Usage: 1.36
-  Set::Array: 0.23
+  Set::Array: 0.28
+  strict: 0
+  warnings: 0
 resources:
   license: http://www.perlfoundation.org/artistic_license_1_0
 version: 0.82

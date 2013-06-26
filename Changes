@@ -1,7 +1,11 @@
 Revision history for Perl extension Genealogy::Gedcom.
 
-0.83  Unreleased
+0.83  Wed Jun 26 10:56:00 2013
+	- Rename CHANGES to Changes as per CPAN::Changes::SPEC.
 	- Remove the HTML templates called rainbow*, because they were never used.
+	- Update pre-preqs' version #s, especially for DateTime and DateTime::Infinite, to see if that fixes
+		mysterious CPAN Tester failures with t/date.t's use of '15 Jul 1954'.
+		Also, we now require Genealogy::Gedcom::Date V 1.08, which has the same DateTime pre-reqs.
 
 0.82  Mon Feb 27 13:33:00 2012
 	- The switch in V 0.81 from DateTime::Format::Gedcom to Genealogy::Gedcom::Date omitted some edits in t/*.t.
