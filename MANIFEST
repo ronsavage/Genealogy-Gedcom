@@ -6,11 +6,9 @@ data/sample.1.ged
 data/sample.2.ged
 data/sample.3.ged
 data/sample.4.ged
+data/sample.5.ged
 docs/uuid.proposal.html
 docs/uuid.proposal.pod
-htdocs/assets/templates/genealogy/gedcom/rainbow.page.tx
-htdocs/assets/templates/genealogy/gedcom/rainbow.row.tx
-htdocs/assets/templates/genealogy/gedcom/rainbow.table.tx
 lib/Genealogy/Gedcom.pm
 lib/Genealogy/Gedcom/Reader.pm
 lib/Genealogy/Gedcom/Reader/Lexer.pm
