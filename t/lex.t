@@ -38,5 +38,6 @@ process('data/sample.2.ged', 45);
 process('data/sample.3.ged', 87);
 process('data/sample.4.ged', 51);
 process('data/sample.5.ged',  9);
+process('data/sample.6.ged',  9);
 
 done_testing;
