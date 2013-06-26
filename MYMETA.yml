@@ -8,7 +8,7 @@ configure_requires:
   Module::Build: 0.38
 dynamic_config: 0
 generated_by: 'Module::Build version 0.4005, CPAN::Meta::Converter version 2.131560'
-license: artistic
+license: artistic_2
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
@@ -16,13 +16,13 @@ name: Genealogy-Gedcom
 provides:
   Genealogy::Gedcom:
     file: lib/Genealogy/Gedcom.pm
-    version: 0.82
+    version: 0.83
   Genealogy::Gedcom::Reader:
     file: lib/Genealogy/Gedcom/Reader.pm
-    version: 0.82
+    version: 0.83
   Genealogy::Gedcom::Reader::Lexer:
     file: lib/Genealogy/Gedcom/Reader/Lexer.pm
-    version: 0.82
+    version: 0.83
 requires:
   DateTime: 1.03
   DateTime::Infinite: 1.03
@@ -36,5 +36,5 @@ requires:
   strict: 0
   warnings: 0
 resources:
-  license: http://www.perlfoundation.org/artistic_license_1_0
-version: 0.82
+  license: http://www.perlfoundation.org/artistic_license_2_0
+version: 0.83
