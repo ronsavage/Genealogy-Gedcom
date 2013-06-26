@@ -4,9 +4,9 @@
       "Ron Savage <ron@savage.net.au>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.4003, CPAN::Meta::Converter version 2.120630",
+   "generated_by" : "Module::Build version 0.4005, CPAN::Meta::Converter version 2.131560",
    "license" : [
-      "artistic_1"
+      "artistic_2"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
@@ -16,8 +16,7 @@
    "prereqs" : {
       "build" : {
          "requires" : {
-            "Test::More" : "0.94",
-            "Test::Pod" : "1.44"
+            "Test::More" : "0.98"
          }
       },
       "configure" : {
@@ -27,37 +26,39 @@
       },
       "runtime" : {
          "requires" : {
-            "DateTime" : "0.7",
-            "DateTime::Infinite" : "0.7",
-            "Genealogy::Gedcom::Date" : "1",
+            "DateTime" : "1.03",
+            "DateTime::Infinite" : "1.03",
+            "Genealogy::Gedcom::Date" : "1.08",
             "Getopt::Long" : "2.38",
-            "Hash::FieldHash" : "0.1",
-            "Log::Handler" : "0.71",
-            "Perl6::Slurp" : "0.03",
+            "Hash::FieldHash" : "0.14",
+            "Log::Handler" : "0.78",
+            "Perl6::Slurp" : "0.051003",
             "Pod::Usage" : "1.36",
-            "Set::Array" : "0.23"
+            "Set::Array" : "0.28",
+            "strict" : "0",
+            "warnings" : "0"
          }
       }
    },
    "provides" : {
       "Genealogy::Gedcom" : {
          "file" : "lib/Genealogy/Gedcom.pm",
-         "version" : "0.82"
+         "version" : "0.83"
       },
       "Genealogy::Gedcom::Reader" : {
          "file" : "lib/Genealogy/Gedcom/Reader.pm",
-         "version" : "0.82"
+         "version" : "0.83"
       },
       "Genealogy::Gedcom::Reader::Lexer" : {
          "file" : "lib/Genealogy/Gedcom/Reader/Lexer.pm",
-         "version" : "0.82"
+         "version" : "0.83"
       }
    },
    "release_status" : "stable",
    "resources" : {
       "license" : [
-         "http://www.perlfoundation.org/artistic_license_1_0"
+         "http://www.perlfoundation.org/artistic_license_2_0"
       ]
    },
-   "version" : "0.82"
+   "version" : "0.83"
 }
