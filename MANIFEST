@@ -7,6 +7,7 @@ data/sample.2.ged
 data/sample.3.ged
 data/sample.4.ged
 data/sample.5.ged
+data/sample.6.ged
 docs/uuid.proposal.html
 docs/uuid.proposal.pod
 lib/Genealogy/Gedcom.pm
