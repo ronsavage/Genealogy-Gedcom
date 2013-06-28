@@ -43,15 +43,15 @@
    "provides" : {
       "Genealogy::Gedcom" : {
          "file" : "lib/Genealogy/Gedcom.pm",
-         "version" : "0.83"
+         "version" : "0.84"
       },
       "Genealogy::Gedcom::Reader" : {
          "file" : "lib/Genealogy/Gedcom/Reader.pm",
-         "version" : "0.83"
+         "version" : "0.84"
       },
       "Genealogy::Gedcom::Reader::Lexer" : {
          "file" : "lib/Genealogy/Gedcom/Reader/Lexer.pm",
-         "version" : "0.83"
+         "version" : "0.84"
       }
    },
    "release_status" : "stable",
@@ -60,5 +60,5 @@
          "http://www.perlfoundation.org/artistic_license_2_0"
       ]
    },
-   "version" : "0.83"
+   "version" : "0.84"
 }

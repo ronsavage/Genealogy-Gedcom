@@ -12,7 +12,7 @@ my($locale) = 'en_AU';
 
 DateTime -> DefaultLocale($locale);
 
-my($parser) = Genealogy::Gedcom::Date -> new(debug => 0);
+my($parser) = Genealogy::Gedcom::Date -> new(debug => 1);
 
 isa_ok($parser, 'Genealogy::Gedcom::Date');
 

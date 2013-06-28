@@ -18,7 +18,7 @@ fieldhash my %minlevel     => 'minlevel';
 fieldhash my %report_items => 'report_items';
 fieldhash my %strict       => 'strict';
 
-our $VERSION = '0.83';
+our $VERSION = '0.84';
 
 # --------------------------------------------------
 
