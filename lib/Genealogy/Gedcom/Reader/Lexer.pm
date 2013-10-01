@@ -4262,7 +4262,7 @@ Version numbers < 1.00 represent development versions. From 1.00 up, they are pr
 
 =item o L<http://www.tamurajones.net/FTWTEXT.xhtml>
 
-This is apparently the worst offender she's seen. Search that page for 'tags'.
+This is apparently the worst offender he's seen. Search that page for 'tags'.
 
 =item o L<http://www.tamurajones.net/GenoPro2011.xhtml>
 

@@ -1,5 +1,8 @@
 Revision history for Perl extension Genealogy::Gedcom.
 
+0.85  Thu Sep 26 09:12:00 2013
+	- Fix typo in docs which referred to Tamura Jones as female. My apologies to him.
+
 0.84  Fri Jun 28 11:51:00 2013
 	- Add data/sample.6.ged to match data/sample.5.ged, to cover the 2 types of dates within the header.
 		One case (sample.5.ged) is used where a TIME is allowed, and the other where it is not.
