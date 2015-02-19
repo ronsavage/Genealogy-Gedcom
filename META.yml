@@ -16,13 +16,13 @@ name: Genealogy-Gedcom
 provides:
   Genealogy::Gedcom:
     file: lib/Genealogy/Gedcom.pm
-    version: '0.84'
+    version: '0.85'
   Genealogy::Gedcom::Reader:
     file: lib/Genealogy/Gedcom/Reader.pm
-    version: '0.84'
+    version: '0.85'
   Genealogy::Gedcom::Reader::Lexer:
     file: lib/Genealogy/Gedcom/Reader/Lexer.pm
-    version: '0.84'
+    version: '0.85'
 requires:
   DateTime: '1.03'
   DateTime::Infinite: '1.03'
@@ -37,4 +37,4 @@ requires:
   warnings: '0'
 resources:
   license: http://www.perlfoundation.org/artistic_license_2_0
-version: '0.84'
+version: '0.85'
