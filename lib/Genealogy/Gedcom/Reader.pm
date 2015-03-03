@@ -193,7 +193,7 @@ My policy is to use the light-weight L<Hash::FieldHash> for stand-alone modules 
 
 =head1 Machine-Readable Change Log
 
-The file CHANGES was converted into Changelog.ini by L<Module::Metadata::Changes>.
+The file Changes was converted into Changelog.ini by L<Module::Metadata::Changes>.
 
 =head1 Version Numbers
 

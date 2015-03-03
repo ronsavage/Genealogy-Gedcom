@@ -1,3 +1,6 @@
+use warnings;
+use strict;
+
 use Module::Build;
 
 Module::Build -> new
@@ -8,25 +11,25 @@ Module::Build -> new
 	dist_author    => 'Ron Savage <ron@savage.net.au>',
 	build_requires =>
 	{
-		Test::More => 0.98,
-#		Test::Pod  => 1.45, # Make it optional. See t/pod.t
+		'Test::More' => 1.001014,
+		'Test::Pod' => 1.48,
 	},
 	configure_requires =>
 	{
-		Module::Build => 0.3800,
+		'Module::Build' => 0.4211,
 	},
 	requires =>
 	{
-		DateTime                => 1.03,
-		DateTime::Infinite      => 1.03,
-		Genealogy::Gedcom::Date => 1.08,
-		Getopt::Long            => 2.38,
-		Hash::FieldHash         => 0.14,
-		Log::Handler            => 0.78,
-		Perl6::Slurp            => 0.051003,
-		Pod::Usage              => 1.36,
-		Set::Array              => 0.28,
-		strict                  => 0,
-		warnings                => 0,
+		'DateTime' => 1.03,
+		'DateTime::Infinite' => 1.03,
+		'Genealogy::Gedcom::Date' => 1.08,
+		'Getopt::Long' => 2.38,
+		'Hash::FieldHash' => 0.14,
+		'Log::Handler' => 0.78,
+		'Perl6::Slurp' => 0.051003,
+		'Pod::Usage' => 1.36,
+		'Set::Array' => 0.28,
+		'strict' => 0,
+		'warnings' => 0,
 	},
 ) -> create_build_script();
