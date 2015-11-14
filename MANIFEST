@@ -1,4 +1,3 @@
-Build.PL
 Changelog.ini
 Changes
 data/royal.ged
@@ -20,7 +19,7 @@ META.yml
 README
 scripts/find.unused.limits.pl
 scripts/lex.pl
-scripts/read.pl
+scripts/test.all.dates.pl
 t/date.t
 t/lex.t
-t/pod.t
+xt/author/pod.t
