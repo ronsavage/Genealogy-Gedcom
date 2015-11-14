@@ -9,48 +9,90 @@ use Log::Handler;
 
 use Moo;
 
-fieldhash my %input_file   => 'input_file';
-fieldhash my %items        => 'items';
-fieldhash my %lexer        => 'lexer';
-fieldhash my %logger       => 'logger';
-fieldhash my %maxlevel     => 'maxlevel';
-fieldhash my %minlevel     => 'minlevel';
-fieldhash my %report_items => 'report_items';
-fieldhash my %strict       => 'strict';
+use Set::Array;
+
+use Types::Standard qw/Any Int Str/;
+
+has input_file =>
+(
+	default  => sub{return ''},
+	is       => 'rw',
+	isa      => Str,
+	required => 0,
+);
+
+has items =>
+(
+	default  => sub{return Set::Array -> new},
+	is       => 'rw',
+	isa      => Any,
+	required => 0,
+);
+
+has logger =>
+(
+	default  => sub{return undef},
+	is       => 'rw',
+	isa      => Any,
+	required => 0,
+);
+
+has maxlevel =>
+(
+	default  => sub{return 'notice'},
+	is       => 'rw',
+	isa      => Str,
+	required => 0,
+);
+
+has minlevel =>
+(
+	default  => sub{return 'error'},
+	is       => 'rw',
+	isa      => Str,
+	required => 0,
+);
+
+has report_items =>
+(
+	default  => sub{return 0},
+	is       => 'rw',
+	isa      => Int,
+	required => 0,
+);
+
+has strict =>
+(
+	default  => sub{return 0},
+	is       => 'rw',
+	isa      => Int,
+	required => 0,
+);
 
 our $VERSION = '0.86';
 
 # --------------------------------------------------
 
-sub _init
+sub BUILD
 {
-	my($self, $arg)     = @_;
-	$$arg{input_file}   ||= ''; # Caller can set.
-	$$arg{lexer}        = '';
-	my($user_logger)    = defined($$arg{logger}); # Caller can set (e.g. to '').
-	$$arg{logger}       = $user_logger ? $$arg{logger} : Log::Handler -> new;
-	$$arg{maxlevel}     ||= 'warning';# Caller can set.
-	$$arg{minlevel}     ||= 'error'; # Caller can set.
-	$$arg{report_items} ||= 0;  # Caller can set.
-	$$arg{strict}       ||= 0;  # Caller can set.
-	$self               = from_hash($self, $arg);
+	my($self) = @_;
 
-	if (! $user_logger)
+	if (! defined $self -> logger)
 	{
+		$self -> logger(Log::Handler -> new);
 		$self -> logger -> add
-			(
-			 screen =>
-			 {
-				 maxlevel       => $self -> maxlevel,
-				 message_layout => '%m',
-				 minlevel       => $self -> minlevel,
-			 }
-			);
+		(
+			screen =>
+			{
+				maxlevel       => $self -> maxlevel,
+				message_layout => '%m',
+				minlevel       => $self -> minlevel,
+				utf8           => 1,
+			}
+		);
 	}
 
-	return $self;
-
-} # End of _init.
+} # End of BUILD.
 
 # --------------------------------------------------
 
@@ -58,21 +100,9 @@ sub log
 {
 	my($self, $level, $s) = @_;
 
-	$self -> logger -> $level($s);
+	$self -> logger -> $level($s) if ($self -> logger);
 
 } # End of log.
-
-# --------------------------------------------------
-
-sub new
-{
-	my($class, %arg) = @_;
-	my($self)        = bless {}, $class;
-	$self            = $self -> _init(\%arg);
-
-	return $self;
-
-}	# End of new.
 
 # --------------------------------------------------
 

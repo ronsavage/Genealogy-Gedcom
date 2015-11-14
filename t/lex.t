@@ -1,11 +1,6 @@
-use strict;
-use warnings;
+use Genealogy::Gedcom::Reader::Lexer;
 
-use Test::More;
-
-# ------------------------------------------------
-
-sub BEGIN { use_ok('Genealogy::Gedcom::Reader::Lexer'); }
+use Test::Stream -V1;
 
 # ------------------------------------------------
 

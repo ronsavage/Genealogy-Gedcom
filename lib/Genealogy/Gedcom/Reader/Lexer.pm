@@ -9,22 +9,124 @@ use Log::Handler;
 
 use Moo;
 
-use File::Slurper;
+use File::Slurper 'read_lines';
 
 use Set::Array;
 
-fieldhash my %counter      => 'counter';
-fieldhash my %gedcom_data  => 'gedcom_data';
-fieldhash my %input_file   => 'input_file';
-fieldhash my %items        => 'items';
-fieldhash my %logger       => 'logger';
-fieldhash my %maxlevel     => 'maxlevel';
-fieldhash my %minlevel     => 'minlevel';
-fieldhash my %report_items => 'report_items';
-fieldhash my %result       => 'result';
-fieldhash my %strict       => 'strict';
+use Types::Standard qw/Any ArrayRef Int Str/;
+
+has counter =>
+(
+	default  => sub{return 0},
+	is       => 'rw',
+	isa      => Int,
+	required => 0,
+);
+
+has gedcom_data =>
+(
+	default  => sub{return []},
+	is       => 'rw',
+	isa      => ArrayRef,
+	required => 0,
+);
+
+has input_file =>
+(
+	default  => sub{return ''},
+	is       => 'rw',
+	isa      => Str,
+	required => 0,
+);
+
+has items =>
+(
+	default  => sub{return Set::Array -> new},
+	is       => 'rw',
+	isa      => Any,
+	required => 0,
+);
+
+has logger =>
+(
+	default  => sub{return undef},
+	is       => 'rw',
+	isa      => Any,
+	required => 0,
+);
+
+has maxlevel =>
+(
+	default  => sub{return 'notice'},
+	is       => 'rw',
+	isa      => Str,
+	required => 0,
+);
+
+has minlevel =>
+(
+	default  => sub{return 'error'},
+	is       => 'rw',
+	isa      => Str,
+	required => 0,
+);
+
+has parser =>
+(
+	default  => sub{return Genealogy::Gedcom::Date -> new},
+	is       => 'rw',
+	isa      => Any,
+	required => 0,
+);
+
+has report_items =>
+(
+	default  => sub{return 0},
+	is       => 'rw',
+	isa      => Int,
+	required => 0,
+);
+
+has result =>
+(
+	default  => sub{return 0},
+	is       => 'rw',
+	isa      => Int,
+	required => 0,
+);
+
+has strict =>
+(
+	default  => sub{return 0},
+	is       => 'rw',
+	isa      => Int,
+	required => 0,
+);
 
 our $VERSION = '0.86';
+
+# --------------------------------------------------
+
+sub BUILD
+{
+	my($self) = @_;
+
+	if (! defined $self -> logger)
+	{
+		$self -> logger(Log::Handler -> new);
+		$self -> logger -> add
+		(
+			screen =>
+			{
+				maxlevel       => $self -> maxlevel,
+				message_layout => '%m',
+				minlevel       => $self -> minlevel,
+				utf8           => 1,
+			}
+		);
+	}
+
+} # End of BUILD.
 
 # --------------------------------------------------
 
@@ -38,10 +140,10 @@ sub check_date
 	}
 	else
 	{
-		my($date) = Genealogy::Gedcom::Date -> new -> parse_date_value(date => $$line[4]);
+		my($date) = $self -> parser -> parse(date => $$line[4]);
 
 		$self -> log(debug => "$id: $date");
-		$self -> push_item($line, 'Date');
+		$self -> push_item($line, $self -> parser -> error ? 'Invalid date' : 'Date');
 	}
 
 } # End of check_date.
@@ -58,10 +160,10 @@ sub check_date_period
 	}
 	else
 	{
-		my($date) = Genealogy::Gedcom::Date -> new -> parse_date_period(date => $$line[4]);
+		my($date) = $self -> parser -> parse(date => $$line[4]);
 
 		$self -> log(debug => "$id: $date");
-		$self -> push_item($line, 'Date');
+		$self -> push_item($line, $self -> parser -> error ? 'Invalid date' : 'Date');
 	}
 
 } # End of check_date_period.
@@ -78,12 +180,13 @@ sub check_exact_date
 	}
 	else
 	{
-		my($date) = Genealogy::Gedcom::Date -> new -> parse_datetime($$line[4]);
+		my($date) = $self -> parser -> parse(date => $$line[4]);
 
 		# This is commented out because log has already been called by the caller.
+		# See also the previous 2 methods.
 
 		#$self -> log(debug => "$id: $date");
-		$self -> push_item($line, 'Date');
+		$self -> push_item($line, $self -> parser -> error ? 'Invalid date' : 'Date');
 	}
 
 } # End of check_exact_date.
@@ -110,22 +213,6 @@ sub check_length
 	return $result;
 
 } # End of check_length.
-
-# --------------------------------------------------
-
-sub _count
-{
-	my($self) = @_;
-
-	# Warning! Don't use:
-	# return $self -> counter($self -> counter + 1);
-	# It returns $self.
-
-	$self -> counter($self -> counter + 1);
-
-	return $self -> counter;
-
-} # End of _count.
 
 # --------------------------------------------------
 
@@ -173,7 +260,7 @@ sub get_gedcom_data_from_file
 {
 	my($self) = @_;
 
-	$self -> gedcom_data([map{s/^\s+//; s/\s+$//; $_} slurp($self -> input_file, {chomp => 1})]);
+	$self -> gedcom_data([map{s/^\s+//; s/\s+$//; $_} read_lines($self -> input_file)]);
 
 } # End of get_gedcom_data_from_file.
 
@@ -357,41 +444,6 @@ sub get_sub_name
 	return $caller[3];
 
 } # End of get_sub_name.
-# --------------------------------------------------
-
-sub _init
-{
-	my($self, $arg)     = @_;
-	$$arg{counter}      = 0;
-	$$arg{gedcom_data}  = [];
-	$$arg{input_file}   ||= ''; # Caller can set.
-	$$arg{items}        = Set::Array -> new;
-	my($user_logger)    = defined($$arg{logger}); # Caller can set (e.g. to '').
-	$$arg{logger}       = $user_logger ? $$arg{logger} : Log::Handler -> new;
-	$$arg{maxlevel}     ||= 'info';  # Caller can set.
-	$$arg{minlevel}     ||= 'error'; # Caller can set.
-	$$arg{report_items} ||= 0;       # Caller can set.
-	$$arg{result}       = 0;
-	$$arg{strict}       ||= $$arg{strict} && $$arg{strict} =~ /^[01]$/ ? $$arg{strict} : 0;  # Caller can set.
-	$self               = from_hash($self, $arg);
-
-	if (! $user_logger)
-	{
-		$self -> logger -> add
-			(
-			 screen =>
-			 {
-				 alias          => 'screen',
-				 maxlevel       => $self -> maxlevel,
-				 message_layout => '%m',
-				 minlevel       => $self -> minlevel,
-			 }
-			);
-	}
-
-	return $self;
-
-} # End of _init.
 
 # --------------------------------------------------
 
@@ -405,18 +457,6 @@ sub log
 
 # --------------------------------------------------
 
-sub new
-{
-	my($class, %arg) = @_;
-	my($self)        = bless {}, $class;
-	$self            = $self -> _init(\%arg);
-
-	return $self;
-
-}	# End of new.
-
-# --------------------------------------------------
-
 sub push_item
 {
 	my($self, $line, $type) = @_;
@@ -424,7 +464,7 @@ sub push_item
 	$self -> items -> push
 		(
 		 {
-			 count      => $self -> _count,
+			 count      => $self -> counter($self -> counter + 1),
 			 data       => $$line[4],
 			 level      => $$line[1],
 			 line_count => $$line[0],
