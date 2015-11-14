@@ -3,15 +3,13 @@ package Genealogy::Gedcom::Reader::Lexer;
 use strict;
 use warnings;
 
-use DateTime;
-
 use Genealogy::Gedcom::Date;
-
-use Hash::FieldHash ':all';
 
 use Log::Handler;
 
-use Perl6::Slurp;
+use Moo;
+
+use File::Slurper;
 
 use Set::Array;
 
@@ -19,7 +17,6 @@ fieldhash my %counter      => 'counter';
 fieldhash my %gedcom_data  => 'gedcom_data';
 fieldhash my %input_file   => 'input_file';
 fieldhash my %items        => 'items';
-fieldhash my %locale       => 'locale';
 fieldhash my %logger       => 'logger';
 fieldhash my %maxlevel     => 'maxlevel';
 fieldhash my %minlevel     => 'minlevel';
@@ -27,7 +24,7 @@ fieldhash my %report_items => 'report_items';
 fieldhash my %result       => 'result';
 fieldhash my %strict       => 'strict';
 
-our $VERSION = '0.85';
+our $VERSION = '0.86';
 
 # --------------------------------------------------
 
@@ -369,7 +366,6 @@ sub _init
 	$$arg{gedcom_data}  = [];
 	$$arg{input_file}   ||= ''; # Caller can set.
 	$$arg{items}        = Set::Array -> new;
-	$$arg{locale}       ||= 'en_AU';
 	my($user_logger)    = defined($$arg{logger}); # Caller can set (e.g. to '').
 	$$arg{logger}       = $user_logger ? $$arg{logger} : Log::Handler -> new;
 	$$arg{maxlevel}     ||= 'info';  # Caller can set.
@@ -392,8 +388,6 @@ sub _init
 			 }
 			);
 	}
-
-	DateTime -> DefaultLocale($self -> locale);
 
 	return $self;
 
@@ -3722,12 +3716,6 @@ Read the GEDCOM data from this file.
 
 Default: ''.
 
-=item o locale => $a_locale_name
-
-Specify the locale for L<DateTime> objects.
-
-Default: 'en_AU'.
-
 =item o logger => $logger_object
 
 Specify a logger object.
@@ -3848,12 +3836,6 @@ Get or set the name of the file to read the GEDCOM data from.
 Returns a object of type L<Set::Array>, which is an arrayref of items output by the lexer.
 
 See the L</FAQ> for details.
-
-=head2 locale([$a_locale_name])
-
-Here, the [] indicate an optional parameter.
-
-Get or set the name of the locale to use for L<DateTime> objects.
 
 =head2 log($level, $s)
 
@@ -4229,6 +4211,16 @@ The code should really ought to support ANSEL (a superset of ASCII), ASCII, UTF-
 =item o Tighten validation
 
 =back
+
+=head1 Repository
+
+L<https://github.com/ronsavage/Genealogy-Gedcom>
+
+=head See Also
+
+L<Genealogy::Gedcom::Date>.
+
+<Gedcom::Date>.
 
 =head1 Machine-Readable Change Log
 

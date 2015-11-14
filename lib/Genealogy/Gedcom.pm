@@ -3,7 +3,7 @@ package Genealogy::Gedcom;
 use strict;
 use warnings;
 
-our $VERSION = '0.85';
+our $VERSION = '0.86';
 
 # --------------------------------------------------
 
@@ -80,10 +80,6 @@ This is a dummy module at the moment, which just occupies the namespace.
 
 This employs the lexer to do the work. It may one day use a (non-existent) parser too.
 
-Run scripts/read.pl -help.
-
-read.pl is currenly a copy of lex.pl. The latter is recommended.
-
 =item o Genealogy::Gedcom::Reader::Lexer
 
 This does the real work for finding tokens within GEDCOM files.
@@ -93,6 +89,16 @@ Run scripts/lex.pl -help.
 See L<Genealogy::Gedcom::Reader::Lexer> for details.
 
 =back
+
+=head1 Repository
+
+L<https://github.com/ronsavage/Genealogy-Gedcom>
+
+=head See Also
+
+L<Genealogy::Gedcom::Date>.
+
+<Gedcom::Date>.
 
 =head1 Machine-Readable Change Log
 

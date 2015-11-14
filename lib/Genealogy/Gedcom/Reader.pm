@@ -5,9 +5,9 @@ use warnings;
 
 use Genealogy::Gedcom::Reader::Lexer;
 
-use Hash::FieldHash ':all';
-
 use Log::Handler;
+
+use Moo;
 
 fieldhash my %input_file   => 'input_file';
 fieldhash my %items        => 'items';
@@ -18,7 +18,7 @@ fieldhash my %minlevel     => 'minlevel';
 fieldhash my %report_items => 'report_items';
 fieldhash my %strict       => 'strict';
 
-our $VERSION = '0.85';
+our $VERSION = '0.86';
 
 # --------------------------------------------------
 
@@ -173,10 +173,6 @@ This is a dummy module at the moment, which just occupies the namespace.
 
 This employs the lexer to do the work. It may one day use a (non-existent) parser too.
 
-Run scripts/read.pl -help.
-
-read.pl is currenly a copy of lex.pl. The latter is recommended.
-
 =item o Genealogy::Gedcom::Reader::Lexer
 
 This does the real work for finding tokens within GEDCOM files.
@@ -190,6 +186,16 @@ See L<Genealogy::Gedcom::Reader::Lexer> for details.
 =head2 Why did you choose L<Hash::FieldHash> over L<Moose>?
 
 My policy is to use the light-weight L<Hash::FieldHash> for stand-alone modules and L<Moose> for applications.
+
+=head1 Repository
+
+L<https://github.com/ronsavage/Genealogy-Gedcom>
+
+=head See Also
+
+L<Genealogy::Gedcom::Date>.
+
+<Gedcom::Date>.
 
 =head1 Machine-Readable Change Log
 
