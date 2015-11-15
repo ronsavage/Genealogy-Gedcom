@@ -1,5 +1,11 @@
 Revision history for Perl extension Genealogy::Gedcom.
 
+0.87  Sat Nov 14 16:31:00 2015
+	- Parse http://www.tamurajones.net/GEDCOMANSELTable.xhtml and extract all the special characters
+		called ANSEL. See FAQ for details. This is a demonstration of how this code handles UTF-8.
+	- Add scripts/parse.sample.7.pl, data/GEDCOMANSELTable.xhtml (UTF-8) and
+		data/sample.7.ged (UTF-8).
+
 0.86  Sat Nov 14 10:44:00 2015
 	- Remove redundant program scripts/read.pl.
 	- Fix dates in data/sample.[1234].ged which used 10-08-2011 instead of 10 Aug 2011.

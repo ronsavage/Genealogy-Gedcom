@@ -37,7 +37,7 @@ push @stack, <<EOS;
 2     DATA Sample
 1   NOTE
 2     CONT This file is based on test data from the web site of Tamura Jones.
-2     CONT This data is the UTF_8 equivalent of the ANSEL data on this page:
+2     CONT The data is the UTF-8 equivalent of the ANSEL data on this page:
 2     CONT http://www.tamurajones.net/GEDCOMANSELTable.xhtml
 1   GEDC
 2     VERS 5.5.1-5

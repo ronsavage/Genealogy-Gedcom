@@ -3,7 +3,7 @@ package Genealogy::Gedcom;
 use strict;
 use warnings;
 
-our $VERSION = '0.86';
+our $VERSION = '0.87';
 
 # --------------------------------------------------
 
@@ -72,9 +72,13 @@ The default output log also handles utf8.
 
 =head2 Does this module handle ANSEL?
 
-No. ANSEL was an invention before Unicode. Just create a utf-8 encoded file.
+No. ANSEL was an invention before Unicode. Just create a utf-8 encoded file, such as
+data/sample.7.ged.
 
-See data/sample.7.ged, which was generated from data/sample.7.html by scripts/parse.sample.7.pl.
+That file was generated from data/GEDCOMANSELTable.xhtml by scripts/parse.sample.7.pl.
+
+Thanx for L<Tamura Jones|http://www.tamurajones.net/GEDCOMANSELTable.xhtml> for creating that web
+page.
 
 =head2 How are user-defined tags handled?
 
