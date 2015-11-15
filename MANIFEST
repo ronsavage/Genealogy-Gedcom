@@ -1,5 +1,6 @@
 Changelog.ini
 Changes
+data/GEDCOMANSELTable.xhtml
 data/royal.ged
 data/sample.1.ged
 data/sample.2.ged
@@ -7,6 +8,7 @@ data/sample.3.ged
 data/sample.4.ged
 data/sample.5.ged
 data/sample.6.ged
+data/sample.7.ged
 docs/uuid.proposal.html
 docs/uuid.proposal.pod
 lib/Genealogy/Gedcom.pm
@@ -20,6 +22,7 @@ META.yml
 README
 scripts/find.unused.limits.pl
 scripts/lex.pl
+scripts/parse.sample.7.pl
 scripts/pod2html.sh
 scripts/test.all.dates.pl
 t/date.t
