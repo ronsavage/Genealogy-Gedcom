@@ -19,6 +19,7 @@ META.yml
 README
 scripts/find.unused.limits.pl
 scripts/lex.pl
+scripts/pod2html.sh
 scripts/test.all.dates.pl
 t/date.t
 t/lex.t

@@ -13,6 +13,7 @@ Revision history for Perl extension Genealogy::Gedcom.
 	- Move t/pod.t into xt/author/.
 	- Add scripts/test.all.dates.pl, which parses all date records in data/*.ged, using the newly
 		re-written Genealogy::Gedcom::Date.
+	- Add scripts/pod2html.sh.
 	- Create repo at https://github.com/ronsavage/Genealogy-Gedcom.
 		This includes updating the docs and Makefile.PL.
 	- Update the docs generally.
