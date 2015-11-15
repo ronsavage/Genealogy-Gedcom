@@ -66,7 +66,7 @@ See L<Genealogy::Gedcom::Reader::Lexer>.
 
 =head2 Does this module handle utf8?
 
-Yes. The input files are assumed to be in utf8. Files in IOS-8859-1 work automatically, too.
+Yes. The input files are assumed to be in utf8. Files in ISO-8859-1 work automatically, too.
 
 The default output log also handles utf8.
 

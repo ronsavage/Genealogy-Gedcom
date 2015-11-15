@@ -3951,7 +3951,7 @@ L<https://github.com/ronsavage/Genealogy-Gedcom>
 
 L<Genealogy::Gedcom::Date>.
 
-<Gedcom::Date>.
+L<Gedcom::Date>.
 
 =head1 Machine-Readable Change Log
 
