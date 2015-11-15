@@ -640,7 +640,7 @@
 1 CHAN
 2 DATE  6 Mar 2004
 0 @I0070@ INDI
-1 NAME 
+1 NAME (Unknown)
 1 FAMC @F0027@
 1 CHAN
 2 DATE  6 Mar 2004
@@ -3352,13 +3352,13 @@
 0 @N0006@ NOTE
 1 CONT Total of 6 children
 0 @N0007@ NOTE
-1 CONC King of Gt Britain, 
+1 CONC King of Gt Britain,
 1 CONT Succeeded to throne in 1901, crowned 1902
 0 @N0008@ NOTE
 1 CONC Created Prince of Wales in 1910
 1 CONT Succeeded to throne on 20 Jan 1936
 1 CONT Abdicated 11 Dec 1936
-1 CONT 
+1 CONT
 0 @N0009@ NOTE
 1 CONC Became Queen in 1837 on death of uncle Willian IV
 1 CONT Origin of house of Windsor ???
@@ -3389,7 +3389,7 @@
 1 CONC dau of Alexander II, Emperor of Russia
 0 @N0022@ NOTE
 1 CONC Her. Pr. of Saxe-Coburg & Gotha
-1 CONT 
+1 CONT
 0 @N0023@ NOTE
 1 CONC King of Rumania
 0 @N0024@ NOTE
@@ -3466,7 +3466,7 @@
 1 CONT King of Bohemia
 0 @N0058@ NOTE
 1 CONC King of England, 1625
-1 CONT 
+1 CONT
 1 CONT Executed in 1649, No monarch till Charles II in 1660?
 0 @N0059@ NOTE
 1 CONC dau of Henry IV, King of France
@@ -3504,7 +3504,7 @@
 1 CONC Cardinal York
 0 @N0072@ NOTE
 1 CONC Young Pretender
-1 CONT 
+1 CONT
 0 @N0073@ NOTE
 1 CONC dau of Gustavus, Pr of Stolberg-Gedern
 0 @N0074@ NOTE
@@ -3518,7 +3518,7 @@
 0 @N0078@ NOTE
 1 CONC King of Scots, 1567
 1 CONT King of England, 1603 (on Death of Elizabeth I)
-1 CONT 
+1 CONT
 0 @N0079@ NOTE
 1 CONC dau of Frederick II, King of Denmark
 0 @N0080@ NOTE
@@ -3648,7 +3648,7 @@
 0 @N0131@ NOTE
 1 CONC Killed in Battle
 1 CONT Earl of Warwick, "the King-Maker"
-1 CONT 
+1 CONT
 0 @N0132@ NOTE
 1 CONC dau of Richard, Earl of Warwick
 0 @N0133@ NOTE
