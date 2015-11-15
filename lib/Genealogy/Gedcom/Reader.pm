@@ -187,37 +187,7 @@ See L<Genealogy::Gedcom::Reader::Lexer>.
 
 =head1 FAQ
 
-=head2 Does this module handle utf8?
-
-Yes. The input files are assumed to be in utf8. Files in IOS-8859-1 work automatically, too.
-
-The default output log also handles utf8.
-
-=head2 o What is the purpose of this set of modules?
-
-It's the basis of a long-term project to write a new interface to GEDCOM files.
-
-=head2 How are the modules related?
-
-=over 4
-
-=item o Genealogy::Gedcom
-
-This is a dummy module at the moment, which just occupies the namespace.
-
-=item o Genealogy::Gedcom::Reader
-
-This employs the lexer to do the work. It may one day use a (non-existent) parser too.
-
-=item o Genealogy::Gedcom::Reader::Lexer
-
-This does the real work for finding tokens within GEDCOM files.
-
-Run scripts/lex.pl -help.
-
-See L<Genealogy::Gedcom::Reader::Lexer> for details.
-
-=back
+See L<Genealogy::Gedcom/FAQ>.
 
 =head1 Repository
 

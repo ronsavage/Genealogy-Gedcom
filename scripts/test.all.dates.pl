@@ -50,3 +50,4 @@ process($parser, 'data/sample.3.ged');
 process($parser, 'data/sample.4.ged');
 process($parser, 'data/sample.5.ged');
 process($parser, 'data/sample.6.ged');
+process($parser, 'data/sample.7.ged');

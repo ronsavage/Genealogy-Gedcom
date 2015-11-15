@@ -24,12 +24,15 @@ sub process
 
 # ------------------------------------------------
 
-process('data/royal.ged',  3668);
-process('data/sample.1.ged', 29);
-process('data/sample.2.ged', 45);
-process('data/sample.3.ged', 87);
-process('data/sample.4.ged', 51);
-process('data/sample.5.ged',  9);
-process('data/sample.6.ged',  9);
+# The numbers in the last column are non-blank line counts per file.
+
+process('data/royal.ged',   3668);
+process('data/sample.1.ged',  29);
+process('data/sample.2.ged',  45);
+process('data/sample.3.ged',  87);
+process('data/sample.4.ged',  51);
+process('data/sample.5.ged',   9);
+process('data/sample.6.ged',   9);
+process('data/sample.7.ged', 103);
 
 done_testing;
