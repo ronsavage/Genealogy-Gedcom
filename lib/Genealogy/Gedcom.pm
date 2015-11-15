@@ -96,6 +96,24 @@ See L<Genealogy::Gedcom::Reader::Lexer> for details.
 
 =back
 
+=head1 Programs Supplied as part of this Package
+
+=over 4
+
+=item o find.unused.limits.pl
+
+Helps me debug code.
+
+=item o lex.pl
+
+Runs the lexer on a file and reports some statictics. Try lex.pl -h.
+
+=item o test.all.dates.pl
+
+Reads all files in data/ and checks that any each date is valid.
+
+=back
+
 =head1 Repository
 
 L<https://github.com/ronsavage/Genealogy-Gedcom>

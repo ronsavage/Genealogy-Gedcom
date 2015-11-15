@@ -4238,21 +4238,11 @@ This is a user (data preparation) error.
 
 By sub-classing.
 
-=head2 What file charsets are supported?
-
-ASCII - i.e. nothing else has been tested.
-
-The code should really ought to support ANSEL (a superset of ASCII), ASCII, UTF-8 and UTF-16 (known to GEDCOM as UNICODE).
-
 =head1 TODO
 
 =over 4
 
-=item o Test input file for binary
-
-=item o Test input file for non-ASCII character sets
-
-=item o Test input file for size 0
+=item o Support ANSEL
 
 =item o Tighten validation
 
