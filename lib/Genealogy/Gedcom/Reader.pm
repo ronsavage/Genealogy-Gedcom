@@ -146,7 +146,7 @@ See L<Genealogy::Gedcom::Reader::Lexer>.
 
 L<Genealogy::Gedcom::Reader> provides a reader for GEDCOM data.
 
-See L<The GEDCOM Specification Ged551-5.pdf|http://wiki.webtrees.net/File:Ged551-5.pdf>.
+See L<The GEDCOM Specification Ged551-5.pdf|http://wiki.webtrees.net/en/Main_Page>.
 
 =head1 Distributions
 
@@ -187,6 +187,12 @@ See L<Genealogy::Gedcom::Reader::Lexer>.
 
 =head1 FAQ
 
+=head2 Does this module handle utf8?
+
+Yes. The input files are assumed to be in utf8. Files in IOS-8859-1 work automatically, too.
+
+The default output log also handles utf8.
+
 =head2 o What is the purpose of this set of modules?
 
 It's the basis of a long-term project to write a new interface to GEDCOM files.
@@ -212,10 +218,6 @@ Run scripts/lex.pl -help.
 See L<Genealogy::Gedcom::Reader::Lexer> for details.
 
 =back
-
-=head2 Why did you choose L<Hash::FieldHash> over L<Moose>?
-
-My policy is to use the light-weight L<Hash::FieldHash> for stand-alone modules and L<Moose> for applications.
 
 =head1 Repository
 

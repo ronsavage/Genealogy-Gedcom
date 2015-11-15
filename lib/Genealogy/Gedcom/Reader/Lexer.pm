@@ -3712,7 +3712,7 @@ Various sample GEDCOM files may be found in the data/ directory in the distro.
 
 L<Genealogy::Gedcom::Reader::Lexer> provides a lexer for GEDCOM data.
 
-See L<the GEDCOM Specification Ged551-5.pdf|http://wiki.webtrees.net/File:Ged551-5.pdf>.
+See L<the GEDCOM Specification Ged551-5.pdf|http://wiki.webtrees.net/en/Main_Page>.
 
 =head1 Installation
 
@@ -3798,9 +3798,9 @@ Specifies lax or strict string length checking during validation.
 
 =over 4
 
-=item o 0 => String lengths can be 0, allowing blank NOTE etc records.
+=item o 0 => String lengths can be 0, allowing blank NOTE etc records
 
-=item o 1 => String lengths must be > 0, as per L<the GEDCOM Specification Ged551-5.pdf|http://wiki.webtrees.net/File:Ged551-5.pdf>.
+=item o 1 => String lengths must be > 0, as per the GEDCOM Specification
 
 Note: A string of length 1 - e.g. '0' - might still be an error.
 
@@ -3808,7 +3808,7 @@ Note: A string of length 1 - e.g. '0' - might still be an error.
 
 Default: 0.
 
-The upper lengths on strings are always as per L<the GEDCOM Specification Ged551-5.pdf|http://wiki.webtrees.net/File:Ged551-5.pdf>.
+The upper lengths on strings are always as per the GEDCOM Specification.
 See L</get_max_length($id, $line)> for details.
 
 String lengths out of range (as with all validation failures) are reported as log messages at level 'warning'.
@@ -3940,6 +3940,12 @@ The [] indicate an optional parameter.
 Get or set the value which determines whether or not to use 0 or 1 as the minimum string length.
 
 =head1 FAQ
+
+=head2 Does this module handle utf8?
+
+Yes. The input files are assumed to be in utf8. Files in IOS-8859-1 work automatically, too.
+
+The default output log also handles utf8.
 
 =head2 How are user-defined tags handled?
 
@@ -4123,7 +4129,7 @@ Xrefs which are (potentially) pointed to are checked for uniqueness.
 
 =item o String lengths
 
-Maximum string lengths are checked as per L<the GEDCOM Specification Ged551-5.pdf|http://wiki.webtrees.net/File:Ged551-5.pdf>.
+Maximum string lengths are checked as per the GEDCOM Specification.
 
 Minimum string lengths are checked as per the value of the 'strict' option to L<new()|Constructor and Initialization>.
 
@@ -4163,8 +4169,8 @@ L<http://www.tamurajones.net/GEDCOMValidation.xhtml>.
 
 =item o Specific values for data attached to tags
 
-Many such checks are possible. E.g. Attribute type (p 43 of L<GEDCOM Specification|http://wiki.webtrees.net/File:Ged551-5.pdf>) must be one of:
-CAST | EDUC | NATI | OCCU | PROP | RELI | RESI | TITL | FACT.
+Many such checks are possible. E.g. Attribute type (p 43 of L<GEDCOM Specification|http://wiki.webtrees.net/en/Main_Page>)
+must be one of: CAST | EDUC | NATI | OCCU | PROP | RELI | RESI | TITL | FACT.
 
 =back
 
@@ -4280,7 +4286,7 @@ Version numbers < 1.00 represent development versions. From 1.00 up, they are pr
 
 =over 4
 
-=item o L<GEDCOM Specification|http://wiki.webtrees.net/File:Ged551-5.pdf>
+=item o L<GEDCOM Specification|http://wiki.webtrees.net/en/Main_Page>
 
 =item o L<GEDCOM Validation|http://www.tamurajones.net/GEDCOMValidation.xhtml>
 
