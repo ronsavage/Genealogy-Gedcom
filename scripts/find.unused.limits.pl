@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Perl6::Slurp;
+use File::Slurper 'read_lines';
 
 # ----------------
 # Source of max: Ged551-5.pdf.
@@ -154,7 +154,7 @@ my(%max) =
 );
 $max{$_}             = 0 for keys %max;
 my($input_file_name) = 'lib/Genealogy/Gedcom/Reader/Lexer.pm';
-my(@line)            = slurp($input_file_name, {chomp => 1});
+my(@line)            = read_lines($input_file_name);
 my($last)            = $#line;
 
 my($id);

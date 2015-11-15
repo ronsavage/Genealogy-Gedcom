@@ -35,8 +35,10 @@ my(%params) =
 		'Pod::Usage' => 0,
 		'Set::Array' => 0.30,
 		'strict' => 0,
-		'Test::Stream' => 1.302026,
+		'Test::More' => 1.001014, # Needed for xt/author/pod.t.
 		'Test::Pod' => 1.48,
+		'Test::Stream' => 1.302026,
+		'Types::Standard' => 1.000005,
 		'warnings' => 0,
 	},
 	VERSION_FROM => 'lib/Genealogy/Gedcom.pm',

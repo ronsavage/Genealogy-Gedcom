@@ -4256,7 +4256,7 @@ The code should really ought to support ANSEL (a superset of ASCII), ASCII, UTF-
 
 L<https://github.com/ronsavage/Genealogy-Gedcom>
 
-=head See Also
+=head1 See Also
 
 L<Genealogy::Gedcom::Date>.
 

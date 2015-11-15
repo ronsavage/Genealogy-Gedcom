@@ -7,9 +7,6 @@ use Test::Stream -V1;
 sub process
 {
 	my($file_name, $expected_count) = @_;
-
-	#diag "File $file_name. Known item count:  $expected_count";
-
 	my($lexer) = Genealogy::Gedcom::Reader::Lexer -> new
 	(
 	 	input_file   => $file_name,

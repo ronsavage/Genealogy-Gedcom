@@ -94,7 +94,7 @@ See L<Genealogy::Gedcom::Reader::Lexer> for details.
 
 L<https://github.com/ronsavage/Genealogy-Gedcom>
 
-=head See Also
+=head1 See Also
 
 L<Genealogy::Gedcom::Date>.
 

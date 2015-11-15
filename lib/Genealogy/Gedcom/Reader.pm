@@ -221,7 +221,7 @@ My policy is to use the light-weight L<Hash::FieldHash> for stand-alone modules 
 
 L<https://github.com/ronsavage/Genealogy-Gedcom>
 
-=head See Also
+=head1 See Also
 
 L<Genealogy::Gedcom::Date>.
 
