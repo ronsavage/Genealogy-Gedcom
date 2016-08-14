@@ -28,25 +28,29 @@ my(%params) =
 	PREREQ_PM =>
 	{
 		'File::Slurper' => 0.008,
-		'Genealogy::Gedcom::Date' => 2.01,
+		'Genealogy::Gedcom::Date' => 2.06,
 		'Getopt::Long' => 0,
 		'Log::Handler' => 0.84,
 		'Moo' => 2.000002,
 		'Pod::Usage' => 0,
 		'Set::Array' => 0.30,
 		'strict' => 0,
-		'Test::More' => 1.001014, # Needed for xt/author/pod.t.
-		'Test::Pod' => 1.48,
-		'Test::Stream' => 1.302026,
 		'Types::Standard' => 1.000005,
 		'warnings' => 0,
+	},
+	TEST_REQUIRES =>
+	{
+		'File::Spec'		=> 0,
+		'File::Temp'		=> 0,
+		'Test::Pod'			=> 1.51,
+		'Test::Simple'		=> 1.302052, # For Test::More.
 	},
 	VERSION_FROM => 'lib/Genealogy/Gedcom.pm',
 );
 
 if ( ($ExtUtils::MakeMaker::VERSION =~ /^\d\.\d\d$/) && ($ExtUtils::MakeMaker::VERSION > 6.30) )
 {
-	$params{LICENSE} = 'artistic_2';
+	$params{LICENSE} = 'perl';
 }
 
 if ($ExtUtils::MakeMaker::VERSION ge '6.46')

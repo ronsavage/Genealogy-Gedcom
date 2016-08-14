@@ -1,6 +1,11 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
 use Genealogy::Gedcom::Reader::Lexer;
 
-use Test::Stream -V1;
+use Test::More;
 
 # ------------------------------------------------
 

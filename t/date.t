@@ -1,6 +1,11 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
 use Genealogy::Gedcom::Date;
 
-use Test::Stream -V1;
+use Test::More;
 
 # ------------------------------------------------
 
@@ -28,7 +33,7 @@ for my $candidate (sort keys %datetime)
 	$result = $parser -> parse(date => $candidate);
 	$expect = $datetime{$candidate};
 
-	is($result, $expect, "Testing: $candidate");
+	is(@$result, @$expect, "Testing: $candidate");
 }
 
 done_testing;
