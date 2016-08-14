@@ -40,10 +40,8 @@ my(%params) =
 	},
 	TEST_REQUIRES =>
 	{
-		'File::Spec'		=> 0,
-		'File::Temp'		=> 0,
-		'Test::Pod'			=> 1.51,
-		'Test::Simple'		=> 1.302052, # For Test::More.
+		'Test::Pod'		=> 1.51,
+		'Test::Simple'	=> 1.302052, # For Test::More.
 	},
 	VERSION_FROM => 'lib/Genealogy/Gedcom.pm',
 );

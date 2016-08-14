@@ -1,5 +1,15 @@
 Revision history for Perl extension Genealogy::Gedcom.
 
+0.88  2016-08-14T11:33:00
+	- Stop using Test::Stream. Use Test::More shipped in the Test::Simple distro.
+		See RT#116933. Thanx to Chad Granum.
+	- Update version #s in pre-reqs.
+	- Adopt new repo structure. For details, see
+		http://savage.net.au/Ron/html/My.Workflow.for.Building.Distros.html.
+	- Update .gitignore and MANIFEST.SKIP.
+	- Change licence from Artistic to Perl.
+	- Move File::Spec, File::Temp, Test::Pod and Test::Simple to TEST_REQUIRES within Makefile.PL.
+
 0.87  Sat Nov 14 16:31:00 2015
 	- Parse http://www.tamurajones.net/GEDCOMANSELTable.xhtml and extract all the special characters
 		called ANSEL. See FAQ for details. This is a demonstration of how this code handles UTF-8.
