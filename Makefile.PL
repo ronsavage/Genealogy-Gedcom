@@ -23,7 +23,6 @@ my(%params) =
 	},
 	DISTNAME  => 'Genealogy-Gedcom',
 	NAME      => 'Genealogy::Gedcom',
-	LICENSE   => 'artistic_2',
 	PL_FILES  => {},
 	PREREQ_PM =>
 	{
@@ -57,17 +56,20 @@ if ($ExtUtils::MakeMaker::VERSION ge '6.46')
 	{
 		'meta-spec' =>
 		{
-			'version' => 2,
+			version => 2,
 		},
 		resources   =>
 		{
-			'bugtracker' => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Genealogy-Gedcom',
-			'license'    => 'http://opensource.org/licenses/Artistic-2.0',
-			repository   =>
+			bugtracker =>
 			{
-				'type' => 'git',
-				'url'  => 'https://github.com/ronsavage/Genealogy-Gedcom.git',
-				'web'  => 'https://github.com/ronsavage/Genealogy-Gedcom',
+				web => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Genealogy-Gedcom',
+			},
+			license		=> 'http://dev.perl.org/licenses/',
+			repository	=>
+			{
+				type	=> 'git',
+				url		=> 'https://github.com/ronsavage/Genealogy-Gedcom.git',
+				web		=> 'https://github.com/ronsavage/Genealogy-Gedcom',
 			},
 		},
 	};
